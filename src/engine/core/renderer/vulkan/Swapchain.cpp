@@ -5,7 +5,7 @@
 
 #include <iostream>
 
-namespace caelus::engine::core::vulkan {
+namespace caelus::core::vulkan {
     static inline u32 get_image_count(const vk::SurfaceCapabilitiesKHR& capabilities) {
         auto count = capabilities.minImageCount + 1;
 
@@ -13,7 +13,7 @@ namespace caelus::engine::core::vulkan {
             count = capabilities.maxImageCount;
         }
 
-        engine::logger::info("Swapchain details: image count: ", count);
+        caelus::logger::info("Swapchain details: image count: ", count);
 
         return count;
     }
@@ -40,14 +40,14 @@ namespace caelus::engine::core::vulkan {
         for (const auto& each : surface_formats) {
             if (each.format == vk::Format::eB8G8R8A8Srgb &&
                 each.colorSpace == vk::ColorSpaceKHR::eSrgbNonlinear) {
-                engine::logger::info("Swapchain details: format: vk::Format::", vk::to_string(each.format));
-                engine::logger::info("Swapchain details: color space: vk::ColorSpaceKHR::", vk::to_string(each.colorSpace));
+                caelus::logger::info("Swapchain details: format: vk::Format::", vk::to_string(each.format));
+                caelus::logger::info("Swapchain details: color space: vk::ColorSpaceKHR::", vk::to_string(each.colorSpace));
                 return each;
             }
         }
 
-        engine::logger::info("Swapchain details: non-preferred format: vk::Format::", vk::to_string(format.format));
-        engine::logger::info("Swapchain details: non-preferred color space: vk::ColorSpaceKHR::", vk::to_string(format.colorSpace));
+        caelus::logger::info("Swapchain details: non-preferred format: vk::Format::", vk::to_string(format.format));
+        caelus::logger::info("Swapchain details: non-preferred color space: vk::ColorSpaceKHR::", vk::to_string(format.colorSpace));
 
         return format;
     }
@@ -55,12 +55,12 @@ namespace caelus::engine::core::vulkan {
     static inline vk::PresentModeKHR get_present_mode(const types::detail::DeviceDetails& device_details, const vk::SurfaceKHR surface) {
         for (const auto& mode : device_details.physical_device.getSurfacePresentModesKHR(surface)) {
             if (mode == vk::PresentModeKHR::eImmediate) {
-                engine::logger::info("Swapchain details: present mode: vk::PresentModeKHR::", vk::to_string(mode));
+                caelus::logger::info("Swapchain details: present mode: vk::PresentModeKHR::", vk::to_string(mode));
                 return mode;
             }
         }
 
-        engine::logger::warning("Swapchain details: non-preferreds present mode: vk::PresentModeKHR::", vk::to_string(vk::PresentModeKHR::eFifo));
+        caelus::logger::warning("Swapchain details: non-preferreds present mode: vk::PresentModeKHR::", vk::to_string(vk::PresentModeKHR::eFifo));
 
         return vk::PresentModeKHR::eFifo;
     }
@@ -86,7 +86,7 @@ namespace caelus::engine::core::vulkan {
 
         details.swapchain = device_details.device.createSwapchainKHR(swapchain_create_info);
 
-        engine::logger::info("Swapchain successfully created");
+        caelus::logger::info("Swapchain successfully created");
     }
 
     static inline void create_images(const types::detail::DeviceDetails& device_details, types::detail::SwapchainDetails& details) {
@@ -115,7 +115,7 @@ namespace caelus::engine::core::vulkan {
                 device_details.device.createImageView(image_view_create_info));
         }
 
-        engine::logger::info("Swapchain images successfully created");
+        caelus::logger::info("Swapchain images successfully created");
     }
 
     types::detail::SwapchainDetails get_swapchain_details(const Window& window, const types::detail::VulkanData& data) {
@@ -135,4 +135,4 @@ namespace caelus::engine::core::vulkan {
 
         return details;
     }
-} // namespace caelus::engine::core::vulkan
+} // namespace caelus::core::vulkan

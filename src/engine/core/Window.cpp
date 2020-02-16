@@ -7,7 +7,7 @@
 #include "GLFW/glfw3.h"
 #include <stdexcept>
 
-namespace caelus::engine::core {
+namespace caelus::core {
     void Window::create(const i32 w, const i32 h, const char* title) {
         glfwSetErrorCallback(callbacks::glfw_error_callback);
 
@@ -15,7 +15,7 @@ namespace caelus::engine::core {
             throw std::runtime_error("Failed glfw init");
         }
 
-        engine::logger::info("glfwInit() success");
+        caelus::logger::info("glfwInit() success");
 
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
@@ -27,7 +27,7 @@ namespace caelus::engine::core {
             throw std::runtime_error("Failed window creation");
         }
 
-        engine::logger::info("Window successfully created with size: ", width, "x", height);
+        caelus::logger::info("Window successfully created with size: ", width, "x", height);
     }
 
     vk::SurfaceKHR Window::create_surface(const types::detail::VulkanData& data) const {
@@ -57,4 +57,4 @@ namespace caelus::engine::core {
     void Window::close() const {
         glfwSetWindowShouldClose(window, true);
     }
-} // namespace caelus::engine::core
+} // namespace caelus::core

@@ -3,7 +3,7 @@
 #include "engine/core/Callbacks.hpp"
 #include "GLFW/glfw3.h"
 
-namespace caelus::engine::core::vulkan {
+namespace caelus::core::vulkan {
     static inline std::vector<const char*> get_required_extensions() {
         u32 count = 0;
 
@@ -79,4 +79,4 @@ namespace caelus::engine::core::vulkan {
 
         return data.instance.createDebugUtilsMessengerEXT(create_info, nullptr, dispatcher);
     }
-} // namespace caelus::engine::core::vulkan
+} // namespace caelus::core::vulkan

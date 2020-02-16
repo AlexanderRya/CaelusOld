@@ -6,7 +6,7 @@
 #include <filesystem>
 #include <fstream>
 
-namespace caelus::engine::core::vulkan {
+namespace caelus::core::vulkan {
     static vk::ShaderModule load_module(const vk::Device& device, const std::filesystem::path& path) {
         std::ifstream in(path.generic_string());
 
@@ -84,4 +84,4 @@ namespace caelus::engine::core::vulkan {
             info.device.destroyShaderModule(module);
         }
     }
-} // namespace caelus::engine::core::vulkan
+} // namespace caelus::core::vulkan

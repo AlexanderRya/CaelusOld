@@ -1,12 +1,12 @@
 #ifndef CAELUS_PIPELINECREATEINFO_HPP
 #define CAELUS_PIPELINECREATEINFO_HPP
 
-#include "engine/Types.hpp"
+#include "engine/core/Types.hpp"
 #include "vulkan/vulkan.hpp"
 
 #include <filesystem>
 
-namespace caelus::engine::core::types::info {
+namespace caelus::core::types::info {
     struct PipelineCreateInfo {
         vk::PipelineVertexInputStateCreateInfo vertex_input_info{};
         vk::PipelineInputAssemblyStateCreateInfo input_assembly{};
@@ -27,6 +27,6 @@ namespace caelus::engine::core::types::info {
 
         PipelineCreateInfo();
     };
-} // namespace caelus::engine::core::types::info
+} // namespace caelus::core::types::info
 
 #endif //CAELUS_PIPELINECREATEINFO_HPP

@@ -3,10 +3,10 @@
 
 #include "engine/core/details/VulkanData.hpp"
 
-namespace caelus::engine::core {
+namespace caelus::core {
     namespace types::detail {
         struct ApplicationData;
-    } // namespace caelus::engine::core::types::detail
+    } // namespace caelus::core::types::detail
 
     struct Renderer {
         types::detail::VulkanData vulkan_data;
@@ -15,6 +15,6 @@ namespace caelus::engine::core {
 
         void init(const types::detail::ApplicationData&);
     };
-} // namespace caelus::engine::core
+} // namespace caelus::core
 
 #endif //CAELUS_RENDERER_HPP

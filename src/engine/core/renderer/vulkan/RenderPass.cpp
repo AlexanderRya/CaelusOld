@@ -3,7 +3,7 @@
 #include "engine/logger/Logger.hpp"
 #include "vulkan/vulkan.hpp"
 
-namespace caelus::engine::core::vulkan {
+namespace caelus::core::vulkan {
     vk::RenderPass make_default_render_pass(const types::detail::VulkanData& data) {
         vk::AttachmentDescription attachment_description{}; {
             attachment_description.format = data.swapchain_details.format.format;
@@ -51,4 +51,4 @@ namespace caelus::engine::core::vulkan {
 
         return render_pass;
     }
-} // namespace caelus::engine::core::vulkan
+} // namespace caelus::core::vulkan

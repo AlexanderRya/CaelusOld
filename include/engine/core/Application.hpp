@@ -3,7 +3,7 @@
 
 #include "details/ApplicationData.hpp"
 
-namespace caelus::engine::core {
+namespace caelus::core {
     class Application {
         types::detail::ApplicationData data;
 
@@ -13,9 +13,9 @@ namespace caelus::engine::core {
     public:
         Application() = default;
 
-        void init(const u32 width, const u32 heigtht, const char* title);
+        void init();
         void run();
     };
-} // namespace caelus::engine::core
+} // namespace caelus::core
 
 #endif //CAELUS_APPLICATION_HPP

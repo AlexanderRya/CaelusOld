@@ -1,6 +1,6 @@
 #include "engine/core/info/PipelineCreateInfo.hpp"
 
-namespace caelus::engine::core::types::info {
+namespace caelus::core::types::info {
     PipelineCreateInfo::PipelineCreateInfo() {
         static std::array<vk::VertexInputBindingDescription, 2> vertex_bindings{}; {
             vertex_bindings[0].stride = sizeof(Vertex);
@@ -78,4 +78,4 @@ namespace caelus::engine::core::types::info {
         color_blend_info.blendConstants[2] = 0.0f;
         color_blend_info.blendConstants[3] = 0.0f;
     }
-} // namespace caelus::engine::core::types::info
+} // namespace caelus::core::types::info

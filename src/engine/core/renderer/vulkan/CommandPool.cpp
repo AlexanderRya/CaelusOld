@@ -1,19 +1,19 @@
 #include "engine/core/renderer/vulkan/CommandPool.hpp"
-#include "engine/core/details/Details.hpp"
+#include "engine/core/details/VulkanData.hpp"
 #include "engine/logger/Logger.hpp"
 #include "vulkan/vulkan.hpp"
 
-namespace caelus::engine::core::vulkan {
-    vk::CommandPool make_command_pool(const types::detail::DeviceDetails& details) {
+namespace caelus::core::vulkan {
+    vk::CommandPool make_command_pool(const types::detail::VulkanData& data) {
         vk::CommandPoolCreateInfo command_pool_create_info{}; {
-            command_pool_create_info.queueFamilyIndex = details.queue_family;
+            command_pool_create_info.queueFamilyIndex = data.device_details.queue_family;
             command_pool_create_info.flags = vk::CommandPoolCreateFlagBits::eResetCommandBuffer;
         }
 
-        auto pool = details.device.createCommandPool(command_pool_create_info);
+        auto pool = data.device_details.device.createCommandPool(command_pool_create_info);
 
         logger::info("Command pool successfully created");
 
         return pool;
     }
-} // namespace caelus::engine::core::vulkan
+} // namespace caelus::core::vulkan

@@ -5,7 +5,7 @@
 #include "engine/core/Window.hpp"
 #include "vulkan/vulkan.hpp"
 
-namespace caelus::engine::core::types::detail {
+namespace caelus::core::types::detail {
     struct VulkanData {
         // Main vulkan data
         vk::Instance instance;
@@ -18,6 +18,6 @@ namespace caelus::engine::core::types::detail {
         std::vector<vk::RenderPass> render_passes;
         std::vector<vk::Framebuffer> framebuffers;
     };
-} // caelus::engine::core::types::detail
+} // caelus::core::types::detail
 
 #endif //CAELUS_VULKANDATA_HPP

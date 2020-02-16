@@ -2,9 +2,9 @@
 #include "engine/core/info/PipelineCreateInfo.hpp"
 #include "engine/core/Application.hpp"
 
-namespace caelus::engine::core {
-    void Application::init(const u32 width, const u32 height, const char* title) {
-        data.window.create(width, height, title);
+namespace caelus::core {
+    void Application::init() {
+        data.window.create(1280, 720, "Engine");
         data.renderer.init(data);
         load_shaders();
     }
@@ -62,4 +62,4 @@ namespace caelus::engine::core {
             data.window.poll_events();
         }
     }
-} // namespace caelus::engine::core
+} // namespace caelus::core

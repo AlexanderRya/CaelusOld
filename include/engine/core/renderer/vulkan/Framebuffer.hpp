@@ -7,16 +7,16 @@ namespace vk {
     class Framebuffer;
 } // namespace vk
 
-namespace caelus::engine::core::types::detail {
+namespace caelus::core::types::detail {
     struct VulkanData;
-} // namespace caelus::engine::core::types::details
+} // namespace caelus::core::types::details
 
-namespace caelus::engine::core {
+namespace caelus::core {
     class Window;
-} // namespace caelus::engine::core
+} // namespace caelus::core
 
-namespace caelus::engine::core::vulkan {
+namespace caelus::core::vulkan {
     std::vector<vk::Framebuffer> get_framebuffers(const Window&, const types::detail::VulkanData&);
-} // namespace caelus::engine::core::vulkan
+} // namespace caelus::core::vulkan
 
 #endif //CAELUS_FRAMEBUFFER_HPP

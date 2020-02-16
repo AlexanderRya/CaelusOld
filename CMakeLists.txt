@@ -23,7 +23,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CAELUS_HEADERS
         include/engine/core/renderer/Renderer.hpp
         include/engine/core/Window.hpp
-        include/engine/Types.hpp
+        include/engine/core/Types.hpp
         include/engine/core/details/VulkanData.hpp
         include/engine/core/renderer/vulkan/Device.hpp
         include/engine/core/Callbacks.hpp
@@ -36,11 +36,11 @@ set(CAELUS_HEADERS
         include/engine/core/renderer/vulkan/CommandPool.hpp
         include/engine/core/renderer/vulkan/DescriptorPool.hpp
         include/engine/core/renderer/vulkan/RenderPass.hpp
-        include/engine/Constants.hpp
+        include/engine/core/Constants.hpp
         include/engine/core/renderer/vulkan/Framebuffer.hpp
         include/engine/core/info/PipelineCreateInfo.hpp
         include/engine/core/renderer/vulkan/Pipeline.hpp
-        include/engine/core/util/Util.hpp)
+        include/engine/core/util/Util.hpp include/engine/core/components/Mesh.hpp)
 
 set(CAELUS_SOURCES
         src/main.cpp
@@ -54,7 +54,7 @@ set(CAELUS_SOURCES
         src/engine/core/renderer/vulkan/RenderPass.cpp
         src/engine/core/renderer/vulkan/Framebuffer.cpp
         src/engine/core/renderer/vulkan/DescriptorPool.cpp
-        src/engine/core/renderer/vulkan/Pipeline.cpp src/engine/core/info/PipelineCreateInfo.cpp)
+        src/engine/core/renderer/vulkan/Pipeline.cpp src/engine/core/info/PipelineCreateInfo.cpp src/engine/core/Callbacks.cpp)
 
 add_executable(Caelus
         ${CAELUS_HEADERS}

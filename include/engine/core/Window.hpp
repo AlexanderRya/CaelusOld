@@ -1,7 +1,7 @@
 #ifndef CAELUS_WINDOW_HPP
 #define CAELUS_WINDOW_HPP
 
-#include "engine/Types.hpp"
+#include "Types.hpp"
 
 struct GLFWwindow;
 
@@ -10,11 +10,11 @@ namespace vk {
     class SurfaceKHR;
 } // namespace vk
 
-namespace caelus::engine::core::types::detail {
+namespace caelus::core::types::detail {
     struct VulkanData;
-} // namespace caelus::engine::core::types::detail
+} // namespace caelus::core::types::detail
 
-namespace caelus::engine::core {
+namespace caelus::core {
     class Window {
         GLFWwindow* window{};
     public:
@@ -36,6 +36,6 @@ namespace caelus::engine::core {
 
         [[nodiscard]] GLFWwindow* handle() const;
     };
-} // namespace caelus::engine::core
+} // namespace caelus::core
 
 #endif //CAELUS_WINDOW_HPP

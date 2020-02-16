@@ -5,12 +5,12 @@ namespace vk {
     class CommandPool;
 } // namespace vk
 
-namespace caelus::engine::core::types::detail {
-    struct DeviceDetails;
-} // namespace caelus::engine::core::types::detail
+namespace caelus::core::types::detail {
+    struct VulkanData;
+} // namespace caelus::core::types::detail
 
-namespace caelus::engine::core::vulkan {
-    vk::CommandPool make_command_pool(const types::detail::DeviceDetails&);
-} // namespace caelus::engine::core::vulkan
+namespace caelus::core::vulkan {
+    vk::CommandPool make_command_pool(const types::detail::VulkanData&);
+} // namespace caelus::core::vulkan
 
 #endif //CAELUS_COMMANDPOOL_HPP

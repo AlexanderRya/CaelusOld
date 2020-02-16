@@ -3,7 +3,7 @@
 #include "engine/logger/Logger.hpp"
 #include "vulkan/vulkan.hpp"
 
-namespace caelus::engine::core::vulkan {
+namespace caelus::core::vulkan {
     vk::DescriptorPool make_descriptor_pool(const types::detail::VulkanData& data) {
         std::array<vk::DescriptorPoolSize, 11> descriptor_pool_sizes{ {
             { vk::DescriptorType::eSampler, 1000 },
@@ -34,4 +34,4 @@ namespace caelus::engine::core::vulkan {
 
         return pool;
     }
-} // namespace caelus::engine::core::vulkan
+} // namespace caelus::core::vulkan

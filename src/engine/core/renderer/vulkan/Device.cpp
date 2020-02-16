@@ -4,7 +4,7 @@
 #include "engine/core/details/VulkanData.hpp"
 #include "engine/core/renderer/vulkan/Device.hpp"
 
-namespace caelus::engine::core::vulkan {
+namespace caelus::core::vulkan {
     static inline vk::PhysicalDevice get_physical_device(const vk::Instance& instance) {
         auto physical_devices = instance.enumeratePhysicalDevices();
 
@@ -12,7 +12,7 @@ namespace caelus::engine::core::vulkan {
             auto device_properties = device.getProperties();
             if (device_properties.deviceType == vk::PhysicalDeviceType::eDiscreteGpu ||
                 device_properties.deviceType == vk::PhysicalDeviceType::eIntegratedGpu) {
-                engine::logger::info("Selected physical device: ", device_properties.deviceName);
+                caelus::logger::info("Selected physical device: ", device_properties.deviceName);
                 return device;
             }
         }
@@ -75,4 +75,4 @@ namespace caelus::engine::core::vulkan {
 
         return device_details;
     }
-} // namespace caelus::engine::core::vulkan
+} // namespace caelus::core::vulkan

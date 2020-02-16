@@ -19,7 +19,7 @@ using f64 = double;
 using isize = i64;
 using usize = u64;
 
-namespace caelus::engine::core::types {
+namespace caelus::core::types {
     struct Vertex {
         glm::vec3 pos;
         glm::vec2 tx_coords;

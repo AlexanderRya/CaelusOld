@@ -4,7 +4,7 @@
 #include "engine/core/Window.hpp"
 #include "vulkan/vulkan.hpp"
 
-namespace caelus::engine::core::vulkan {
+namespace caelus::core::vulkan {
     std::vector<vk::Framebuffer> get_framebuffers(const Window& window, const types::detail::VulkanData& data) {
         std::vector<vk::Framebuffer> framebuffers{};
         framebuffers.reserve(data.swapchain_details.image_count);
@@ -28,4 +28,4 @@ namespace caelus::engine::core::vulkan {
 
         return framebuffers;
     }
-} // namespace caelus::engine::core::vulkan
+} // namespace caelus::core::vulkan

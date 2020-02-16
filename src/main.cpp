@@ -1,8 +1,8 @@
 #include "engine/core/Application.hpp"
 
 int main() {
-    caelus::engine::core::Application app{};
-    app.init(1280, 720, "Engine");
+    caelus::core::Application app{};
+    app.init();
     app.run();
     return 0;
 }

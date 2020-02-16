@@ -6,7 +6,7 @@
 
 #include <string>
 
-namespace caelus::engine::logger {
+namespace caelus::logger {
 #if !defined(CAELUS_DISABLE_LOGGING)
     template <typename ...Args>
     void info(Args&& ...args) {
@@ -44,6 +44,6 @@ namespace caelus::engine::logger {
     template <typename ...Args>
     void error([[maybe_unused]] Args&& ...args) {}
 #endif
-} // namespace caelus::engine
+} // namespace caelus::logger
 
 #endif //CAELUS_LOGGER_HPP
