@@ -10,7 +10,7 @@ namespace caelus::core::types::info {
     struct PipelineCreateInfo {
         vk::PipelineVertexInputStateCreateInfo vertex_input_info{};
         vk::PipelineInputAssemblyStateCreateInfo input_assembly{};
-        vk::PipelineViewportStateCreateInfo viewport_state_info{};
+        vk::PipelineViewportStateCreateInfo viewport_state{};
         vk::PipelineRasterizationStateCreateInfo rasterizer_state_info{};
         vk::PipelineMultisampleStateCreateInfo multisampling_state_info{};
         vk::PipelineDepthStencilStateCreateInfo depth_stencil_info{};
@@ -24,6 +24,7 @@ namespace caelus::core::types::info {
         vk::Device device{};
         vk::RenderPass render_pass{};
         u64 subpass_index{};
+        u32 id = -1;
 
         PipelineCreateInfo();
     };

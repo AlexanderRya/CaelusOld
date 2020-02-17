@@ -18,6 +18,7 @@ namespace caelus::core {
     class Window {
         GLFWwindow* window{};
     public:
+        static inline bool resized = true;
         u32 width{}, height{};
 
         Window() = default;
@@ -27,7 +28,7 @@ namespace caelus::core {
         Window(Window&&) = delete;
         Window& operator =(Window&&) = delete;
 
-        void create(const i32 width, const i32 h, const char* title);
+        void create(const i32, const i32, const char*);
         [[nodiscard]] vk::SurfaceKHR create_surface(const types::detail::VulkanData&) const;
 
         void poll_events() const;

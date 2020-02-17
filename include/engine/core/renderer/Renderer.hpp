@@ -4,16 +4,24 @@
 #include "engine/core/details/VulkanData.hpp"
 
 namespace caelus::core {
-    namespace types::detail {
-        struct ApplicationData;
-    } // namespace caelus::core::types::detail
+    class Window;
 
-    struct Renderer {
+    namespace manager {
+        class AssetManager;
+    } // namespace caelus::core::manager
+
+    class Renderer {
+        u32 current_frame;
+        u32 image_index;
+
+        void record_buffers(const manager::AssetManager&);
+    public:
         types::detail::VulkanData vulkan_data;
 
         Renderer() = default;
 
-        void init(const types::detail::ApplicationData&);
+        void init(const Window&);
+        void draw(const manager::AssetManager&);
     };
 } // namespace caelus::core
 

@@ -37,6 +37,14 @@ namespace caelus::core::types::info {
         input_assembly.topology = vk::PrimitiveTopology::eTriangleList;
         input_assembly.primitiveRestartEnable = false;
 
+        vk::Viewport viewport{};
+        vk::Rect2D scissor{};
+
+        viewport_state.viewportCount = 1;
+        viewport_state.pViewports = &viewport;
+        viewport_state.scissorCount = 1;
+        viewport_state.pScissors = &scissor;
+
         rasterizer_state_info.lineWidth = 1.0f;
         rasterizer_state_info.depthBiasEnable = false;
         rasterizer_state_info.depthClampEnable = false;

@@ -23,12 +23,16 @@ namespace caelus::core::vulkan {
 
         auto module = device.createShaderModule(create_info);
 
-        logger::info("Module: \"" + path.filename().generic_string() + "\" successfully loaded");
+        logger::info("Module \"" + path.filename().generic_string() + "\" successfully loaded");
 
         return module;
     }
 
     void Pipeline::create(const types::info::PipelineCreateInfo& info) {
+        if (info.id == -1u) {
+            throw std::runtime_error("Invalid pipeline id supplied");
+        }
+
         std::array<vk::ShaderModule, 2> modules{}; {
             modules[0] = load_module(info.device, info.vertex_path);
             modules[1] = load_module(info.device, info.fragment_path);
@@ -56,17 +60,24 @@ namespace caelus::core::vulkan {
             }
         }
 
+        const std::array dynamic_states{ vk::DynamicState::eViewport, vk::DynamicState::eScissor };
+
+        vk::PipelineDynamicStateCreateInfo dynamic_state_create_info{}; {
+            dynamic_state_create_info.dynamicStateCount = dynamic_states.size();
+            dynamic_state_create_info.pDynamicStates = dynamic_states.data();
+        }
+
         vk::GraphicsPipelineCreateInfo pipeline_info{}; {
             pipeline_info.stageCount = stages.size();
             pipeline_info.pStages = stages.data();
             pipeline_info.pVertexInputState = &info.vertex_input_info;
             pipeline_info.pInputAssemblyState = &info.input_assembly;
-            pipeline_info.pViewportState = &info.viewport_state_info;
+            pipeline_info.pViewportState = &info.viewport_state;
             pipeline_info.pRasterizationState = &info.rasterizer_state_info;
             pipeline_info.pMultisampleState = &info.multisampling_state_info;
             pipeline_info.pDepthStencilState = &info.depth_stencil_info;
             pipeline_info.pColorBlendState = &info.color_blend_info;
-            pipeline_info.pDynamicState = nullptr;
+            pipeline_info.pDynamicState = &dynamic_state_create_info;
             pipeline_info.layout = info.pipeline_layout;
             pipeline_info.renderPass = info.render_pass;
             pipeline_info.subpass = info.subpass_index;

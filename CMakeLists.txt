@@ -32,7 +32,6 @@ set(CAELUS_HEADERS
         include/engine/core/renderer/vulkan/Swapchain.hpp
         include/engine/logger/Logger.hpp
         include/engine/core/Application.hpp
-        include/engine/core/details/ApplicationData.hpp
         include/engine/core/renderer/vulkan/CommandPool.hpp
         include/engine/core/renderer/vulkan/DescriptorPool.hpp
         include/engine/core/renderer/vulkan/RenderPass.hpp
@@ -40,7 +39,10 @@ set(CAELUS_HEADERS
         include/engine/core/renderer/vulkan/Framebuffer.hpp
         include/engine/core/info/PipelineCreateInfo.hpp
         include/engine/core/renderer/vulkan/Pipeline.hpp
-        include/engine/core/util/Util.hpp include/engine/core/components/Mesh.hpp)
+        include/engine/core/util/Util.hpp
+        include/engine/core/components/Mesh.hpp
+        include/engine/core/components/manager/AssetManager.hpp
+        include/engine/core/components/Texture.hpp include/engine/core/renderer/vulkan/CommandBuffer.hpp include/engine/core/renderer/vulkan/Fence.hpp include/engine/core/renderer/vulkan/Semaphore.hpp)
 
 set(CAELUS_SOURCES
         src/main.cpp
@@ -54,7 +56,10 @@ set(CAELUS_SOURCES
         src/engine/core/renderer/vulkan/RenderPass.cpp
         src/engine/core/renderer/vulkan/Framebuffer.cpp
         src/engine/core/renderer/vulkan/DescriptorPool.cpp
-        src/engine/core/renderer/vulkan/Pipeline.cpp src/engine/core/info/PipelineCreateInfo.cpp src/engine/core/Callbacks.cpp)
+        src/engine/core/renderer/vulkan/Pipeline.cpp
+        src/engine/core/info/PipelineCreateInfo.cpp
+        src/engine/core/Callbacks.cpp
+        src/engine/core/components/manager/AssetManager.cpp src/engine/core/renderer/vulkan/CommandBuffer.cpp src/engine/core/renderer/vulkan/Fence.cpp src/engine/core/renderer/vulkan/Semaphore.cpp)
 
 add_executable(Caelus
         ${CAELUS_HEADERS}
