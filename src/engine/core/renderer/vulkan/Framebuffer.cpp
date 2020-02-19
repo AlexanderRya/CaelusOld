@@ -5,13 +5,13 @@
 #include "vulkan/vulkan.hpp"
 
 namespace caelus::core::vulkan {
-    std::vector<vk::Framebuffer> get_framebuffers(const Window& window, const types::detail::VulkanData& data) {
+    std::vector<vk::Framebuffer> get_framebuffers(const u32 id, const Window& window, const types::detail::VulkanData& data) {
         std::vector<vk::Framebuffer> framebuffers{};
         framebuffers.reserve(data.swapchain_details.image_count);
 
         vk::FramebufferCreateInfo framebuffer_create_info{}; {
             framebuffer_create_info.attachmentCount = data.swapchain_details.image_count;
-            framebuffer_create_info.renderPass = data.render_passes[0];
+            framebuffer_create_info.renderPass = data.render_passes[id];
             framebuffer_create_info.height = window.height;
             framebuffer_create_info.width = window.width;
             framebuffer_create_info.attachmentCount = 1;
@@ -24,7 +24,7 @@ namespace caelus::core::vulkan {
         }
 
         logger::info(
-            "Framebuffers successfully created with renderpass, index: ", 0);
+            "Framebuffers successfully created with renderpass at index: ", id);
 
         return framebuffers;
     }

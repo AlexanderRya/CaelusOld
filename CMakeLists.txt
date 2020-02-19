@@ -41,8 +41,15 @@ set(CAELUS_HEADERS
         include/engine/core/renderer/vulkan/Pipeline.hpp
         include/engine/core/util/Util.hpp
         include/engine/core/components/Mesh.hpp
-        include/engine/core/components/manager/AssetManager.hpp
-        include/engine/core/components/Texture.hpp include/engine/core/renderer/vulkan/CommandBuffer.hpp include/engine/core/renderer/vulkan/Fence.hpp include/engine/core/renderer/vulkan/Semaphore.hpp)
+        include/engine/core/components/manager/ResourceManager.hpp
+        include/engine/core/components/Texture.hpp
+        include/engine/core/renderer/vulkan/CommandBuffer.hpp
+        include/engine/core/renderer/vulkan/Fence.hpp
+        include/engine/core/renderer/vulkan/Semaphore.hpp
+        include/engine/core/components/buffers/VertexBuffer.hpp
+        include/engine/core/components/buffers/InstanceBuffer.hpp
+        include/engine/core/components/manager/PipelineLayoutManager.hpp
+        include/engine/core/components/manager/DescriptorLayoutManager.hpp include/engine/core/renderer/vulkan/DescriptorSet.hpp)
 
 set(CAELUS_SOURCES
         src/main.cpp
@@ -59,13 +66,21 @@ set(CAELUS_SOURCES
         src/engine/core/renderer/vulkan/Pipeline.cpp
         src/engine/core/info/PipelineCreateInfo.cpp
         src/engine/core/Callbacks.cpp
-        src/engine/core/components/manager/AssetManager.cpp src/engine/core/renderer/vulkan/CommandBuffer.cpp src/engine/core/renderer/vulkan/Fence.cpp src/engine/core/renderer/vulkan/Semaphore.cpp)
+        src/engine/core/components/manager/ResourceManager.cpp
+        src/engine/core/renderer/vulkan/CommandBuffer.cpp
+        src/engine/core/renderer/vulkan/Fence.cpp
+        src/engine/core/renderer/vulkan/Semaphore.cpp
+        src/engine/core/components/buffers/VertexBuffer.cpp
+        src/engine/core/components/buffers/InstanceBuffer.cpp
+        src/engine/core/components/manager/PipelineLayoutManager.cpp
+        src/engine/core/components/manager/DescriptorLayoutManager.cpp
+        src/engine/core/components/manager/DescriptorLayoutManager.cpp)
 
 add_executable(Caelus
         ${CAELUS_HEADERS}
         ${CAELUS_SOURCES})
 
-target_compile_options(Caelus PRIVATE -std=c++2a -O0 -Wall -Wextra -Werror -pedantic)
+target_compile_options(Caelus PRIVATE -std=c++2a -O3 -Wall -Wextra -Werror -pedantic)
 
 if (WIN32)
     target_compile_definitions(Caelus PRIVATE _CRT_SECURE_NO_WARNINGS)

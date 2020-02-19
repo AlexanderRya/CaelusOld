@@ -1,5 +1,4 @@
 #include "engine/core/Application.hpp"
-#include <dlfcn.h>
 
 int main() {
     caelus::core::Application app{};

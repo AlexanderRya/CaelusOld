@@ -2,6 +2,7 @@
 #define CAELUS_FRAMEBUFFER_HPP
 
 #include <vector>
+#include "engine/core/Types.hpp"
 
 namespace vk {
     class Framebuffer;
@@ -16,7 +17,7 @@ namespace caelus::core {
 } // namespace caelus::core
 
 namespace caelus::core::vulkan {
-    std::vector<vk::Framebuffer> get_framebuffers(const Window&, const types::detail::VulkanData&);
+    std::vector<vk::Framebuffer> get_framebuffers(const u32, const Window&, const types::detail::VulkanData&);
 } // namespace caelus::core::vulkan
 
 #endif //CAELUS_FRAMEBUFFER_HPP

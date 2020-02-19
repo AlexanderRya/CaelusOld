@@ -12,7 +12,7 @@
 #include "engine/core/renderer/vulkan/CommandPool.hpp"
 #include "engine/core/renderer/vulkan/CommandBuffer.hpp"
 #include "engine/core/renderer/vulkan/DescriptorPool.hpp"
-#include "engine/core/components/manager/AssetManager.hpp"
+#include "engine/core/components/manager/ResourceManager.hpp"
 
 namespace caelus::core {
     void Renderer::init(const Window& window) {
@@ -24,16 +24,18 @@ namespace caelus::core {
         vulkan_data.device_details = vulkan::get_device_details(vulkan_data);
         vulkan_data.swapchain_details = vulkan::get_swapchain_details(window, vulkan_data);
         vulkan_data.command_pool = vulkan::make_command_pool(vulkan_data);
+        vulkan_data.transient_pool = vulkan::make_transient_pool(vulkan_data);
         vulkan_data.command_buffers = vulkan::make_command_buffer(vulkan_data);
         vulkan_data.descriptor_pool = vulkan::make_descriptor_pool(vulkan_data);
         vulkan_data.render_passes.emplace_back(vulkan::make_default_render_pass(vulkan_data));
-        vulkan_data.framebuffers = vulkan::get_framebuffers(window, vulkan_data);
+        vulkan_data.framebuffers.emplace_back(vulkan::get_framebuffers(0, window, vulkan_data));
+        // Synchronization
         vulkan_data.frames_in_flight.resize(constants::max_frames_in_flight);
         vulkan_data.image_available = vulkan::make_semaphores(constants::max_frames_in_flight, vulkan_data);
         vulkan_data.render_finished = vulkan::make_semaphores(constants::max_frames_in_flight, vulkan_data);
     }
 
-    void Renderer::draw(const manager::AssetManager& asset_manager) {
+    void Renderer::draw(const manager::ResourceManager& resource_manager) {
         auto res = vulkan_data.device_details.device.acquireNextImageKHR(
             vulkan_data.swapchain_details.swapchain,
             -1,
@@ -51,7 +53,7 @@ namespace caelus::core {
 
         vulkan_data.device_details.device.waitForFences(vulkan_data.frames_in_flight[current_frame], true, -1);
 
-        record_buffers(asset_manager);
+        record_buffers(resource_manager);
 
         std::array<vk::PipelineStageFlags, 1> wait_stages{ vk::PipelineStageFlagBits::eColorAttachmentOutput };
 
@@ -81,7 +83,7 @@ namespace caelus::core {
         current_frame = (current_frame + 1) % constants::max_frames_in_flight;
     }
 
-    void Renderer::record_buffers(const manager::AssetManager& asset_manager) {
+    void Renderer::record_buffers(const manager::ResourceManager& resource_manager) {
         vk::CommandBufferBeginInfo begin_info{}; {
             begin_info.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
         }
@@ -89,16 +91,18 @@ namespace caelus::core {
         vulkan_data.command_buffers[image_index].begin(begin_info);
 
         vk::ClearValue clear_value{}; {
-            clear_value.color = std::array<float, 4>{ 0.2f, 0.2f, 0.0f, 0.0f };
+            clear_value.color = std::array<float, 4>{ 0.0f, 0.0f, 0.0f, 0.0f };
         }
 
         vk::RenderPassBeginInfo render_pass_begin_info{}; {
             render_pass_begin_info.renderPass = vulkan_data.render_passes[0];
-            render_pass_begin_info.framebuffer = vulkan_data.framebuffers[image_index];
+            render_pass_begin_info.framebuffer = vulkan_data.framebuffers[0][image_index];
             render_pass_begin_info.pClearValues = &clear_value;
             render_pass_begin_info.clearValueCount = 1;
             render_pass_begin_info.renderArea.extent = vulkan_data.swapchain_details.extent;
         }
+        
+        vulkan_data.command_buffers[image_index].beginRenderPass(render_pass_begin_info, vk::SubpassContents::eInline);
 
         vk::Viewport viewport{}; {
             viewport.x = 0;
@@ -115,13 +119,16 @@ namespace caelus::core {
         }
 
         vulkan_data.command_buffers[image_index].setViewport(0, viewport);
-        
-        vulkan_data.command_buffers[image_index].beginRenderPass(render_pass_begin_info, vk::SubpassContents::eInline);
+        vulkan_data.command_buffers[image_index].setScissor(0, scissor);
 
-        for (const auto& mesh : asset_manager.get_meshes()) {
+        for (const auto& mesh : resource_manager.get_meshes()) {
             vulkan_data.command_buffers[image_index].bindPipeline(
                 vk::PipelineBindPoint::eGraphics,
-                asset_manager.get_pipeline(mesh.pipeline_id).pipeline);
+                resource_manager.get_pipeline(mesh.pipeline_id).pipeline);
+
+            vk::DeviceSize offset = 0;
+            vulkan_data.command_buffers[image_index].bindVertexBuffers(0, mesh.vertex_buffer.buffer, offset);
+            vulkan_data.command_buffers[image_index].bindVertexBuffers(1, mesh.instance_buffer.buffer, offset);
             vulkan_data.command_buffers[image_index].draw(mesh.vertices.size(), mesh.instances.size(), 0, 0);
         }
 

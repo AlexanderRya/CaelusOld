@@ -37,7 +37,7 @@ namespace caelus::core::vulkan {
         auto extensions = physical_device.enumerateDeviceExtensionProperties();
         constexpr const char* surface_ext[]{ VK_KHR_SWAPCHAIN_EXTENSION_NAME };
 
-        if (std::find_if(extensions.begin(), extensions.end(), [](const vk::ExtensionProperties& properties) {
+        if (std::find_if(extensions.begin(), extensions.end(), [](const vk::ExtensionProperties& properties){
             return std::strcmp(properties.extensionName, VK_KHR_SWAPCHAIN_EXTENSION_NAME) == 0;
         }) != extensions.end()) {
             float priorities[]{ 1.0f };
@@ -75,4 +75,18 @@ namespace caelus::core::vulkan {
 
         return device_details;
     }
+
+    u32 find_memory_type(const types::detail::VulkanData& data, const u32 mask, const vk::MemoryPropertyFlags& flags) {
+        const vk::PhysicalDeviceMemoryProperties memory_properties = data.device_details.physical_device.getMemoryProperties();
+
+        for (u32 i = 0; i < memory_properties.memoryTypeCount; ++i) {
+            if ((mask & (1u << i)) &&
+                (memory_properties.memoryTypes[i].propertyFlags & flags) == flags) {
+                return i;
+            }
+        }
+
+        throw std::runtime_error("Failed to find memory type");
+    }
+
 } // namespace caelus::core::vulkan

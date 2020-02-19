@@ -1,5 +1,5 @@
-#ifndef CAELUS_ASSETMANAGER_HPP
-#define CAELUS_ASSETMANAGER_HPP
+#ifndef CAELUS_RESOURCEMANAGER_HPP
+#define CAELUS_RESOURCEMANAGER_HPP
 
 #include "engine/core/renderer/vulkan/Pipeline.hpp"
 #include "engine/core/components/Mesh.hpp"
@@ -12,11 +12,11 @@ namespace caelus::core::types::info {
 } // caelus::core::types::info
 
 namespace caelus::core::manager {
-    class AssetManager {
+    class ResourceManager {
         std::vector<components::Mesh> meshes;
         std::unordered_map<u32, vulkan::Pipeline> pipelines;
     public:
-        AssetManager() = default;
+        ResourceManager() = default;
 
         void add_mesh(const components::Mesh&);
         void add_pipeline(const types::info::PipelineCreateInfo&);
@@ -24,6 +24,6 @@ namespace caelus::core::manager {
         [[nodiscard]] vulkan::Pipeline get_pipeline(const u32) const;
         [[nodiscard]] const std::vector<components::Mesh>& get_meshes() const;
     };
-} // namespace caelus::core::managers
+} // namespace caelus::core::manager
 
-#endif //CAELUS_ASSETMANAGER_HPP
+#endif //CAELUS_RESOURCEMANAGER_HPP

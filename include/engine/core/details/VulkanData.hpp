@@ -14,10 +14,11 @@ namespace caelus::core::types::detail {
         DeviceDetails device_details;
         SwapchainDetails swapchain_details;
         vk::CommandPool command_pool;
+        vk::CommandPool transient_pool;
         std::vector<vk::CommandBuffer> command_buffers;
         vk::DescriptorPool descriptor_pool;
         std::vector<vk::RenderPass> render_passes;
-        std::vector<vk::Framebuffer> framebuffers;
+        std::vector<std::vector<vk::Framebuffer>> framebuffers;
         std::vector<vk::Fence> frames_in_flight;
         std::vector<vk::Semaphore> image_available;
         std::vector<vk::Semaphore> render_finished;

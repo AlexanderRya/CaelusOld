@@ -7,12 +7,12 @@ namespace caelus::core::types::info {
             vertex_bindings[0].binding = 0;
             vertex_bindings[0].inputRate = vk::VertexInputRate::eVertex;
 
-            vertex_bindings[1].stride = sizeof(glm::vec3);
+            vertex_bindings[1].stride = sizeof(glm::mat4);
             vertex_bindings[1].binding = 1;
             vertex_bindings[1].inputRate = vk::VertexInputRate::eInstance;
         }
 
-        static std::array<vk::VertexInputAttributeDescription, 3> vertex_attributes{}; {
+        static std::array<vk::VertexInputAttributeDescription, 6> vertex_attributes{}; {
             vertex_attributes[0].binding = 0;
             vertex_attributes[0].format = vk::Format::eR32G32B32Sfloat;
             vertex_attributes[0].location = 0;
@@ -24,9 +24,24 @@ namespace caelus::core::types::info {
             vertex_attributes[1].offset = offsetof(Vertex, tx_coords);
 
             vertex_attributes[2].binding = 1;
-            vertex_attributes[2].format = vk::Format::eR32G32B32Sfloat;
+            vertex_attributes[2].format = vk::Format::eR32G32B32A32Sfloat;
             vertex_attributes[2].location = 6;
             vertex_attributes[2].offset = 0;
+            
+            vertex_attributes[3].binding = 1;
+            vertex_attributes[3].format = vk::Format::eR32G32B32A32Sfloat;
+            vertex_attributes[3].location = 7;
+            vertex_attributes[3].offset = sizeof(glm::vec4);
+
+            vertex_attributes[4].binding = 1;
+            vertex_attributes[4].format = vk::Format::eR32G32B32A32Sfloat;
+            vertex_attributes[4].location = 8;
+            vertex_attributes[4].offset = 2 * sizeof(glm::vec4);
+
+            vertex_attributes[5].binding = 1;
+            vertex_attributes[5].format = vk::Format::eR32G32B32A32Sfloat;
+            vertex_attributes[5].location = 9;
+            vertex_attributes[5].offset = 3 * sizeof(glm::vec4);
         }
 
         vertex_input_info.pVertexBindingDescriptions = vertex_bindings.data();

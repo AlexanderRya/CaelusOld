@@ -7,21 +7,21 @@ namespace caelus::core {
     class Window;
 
     namespace manager {
-        class AssetManager;
+        class ResourceManager;
     } // namespace caelus::core::manager
 
     class Renderer {
         u32 current_frame;
         u32 image_index;
 
-        void record_buffers(const manager::AssetManager&);
+        void record_buffers(const manager::ResourceManager&);
     public:
         types::detail::VulkanData vulkan_data;
 
         Renderer() = default;
 
         void init(const Window&);
-        void draw(const manager::AssetManager&);
+        void draw(const manager::ResourceManager&);
     };
 } // namespace caelus::core
 
