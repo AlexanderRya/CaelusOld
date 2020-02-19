@@ -11,7 +11,10 @@ namespace caelus::core::components {
         std::vector<types::Vertex> vertices;
         std::vector<glm::mat4> instances;
 
-        u64 pipeline_id;
+        u32 pipeline_id;
+        u32 pipeline_layout_id;
+        u32 descriptor_set_id;
+
         buffers::VertexBuffer vertex_buffer;
         buffers::InstanceBuffer instance_buffer;
         //!TODO: Textures.

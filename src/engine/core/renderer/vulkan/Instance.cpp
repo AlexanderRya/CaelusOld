@@ -1,5 +1,5 @@
 #include "engine/core/renderer/vulkan/Instance.hpp"
-#include "engine/core/details/VulkanData.hpp"
+#include "engine/core/details/VulkanContext.hpp"
 #include "engine/core/Callbacks.hpp"
 #include "GLFW/glfw3.h"
 
@@ -62,7 +62,7 @@ namespace caelus::core::vulkan {
         return vk::createInstance(instance_create_info);
     }
 
-    vk::DebugUtilsMessengerEXT install_validation_layers(const types::detail::VulkanData& data) {
+    vk::DebugUtilsMessengerEXT install_validation_layers(const types::detail::VulkanContext& data) {
         vk::DebugUtilsMessengerCreateInfoEXT create_info{}; {
             create_info.messageSeverity =
                 vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose |

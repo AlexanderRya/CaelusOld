@@ -10,7 +10,7 @@ namespace caelus::core::manager {
         layouts[id] = layout;
     }
 
-    vk::PipelineLayout PipelineLayoutManager::get_layout(const u32 id) const {
+    vk::PipelineLayout& PipelineLayoutManager::get_layout(const u32 id) {
         return layouts.at(id);
     }
 } // namespace caelus::core::manager

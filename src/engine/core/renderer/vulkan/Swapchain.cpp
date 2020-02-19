@@ -1,5 +1,5 @@
 #include "engine/logger/Logger.hpp"
-#include "engine/core/details/VulkanData.hpp"
+#include "engine/core/details/VulkanContext.hpp"
 #include "engine/core/renderer/vulkan/Swapchain.hpp"
 #include "vulkan/vulkan.hpp"
 
@@ -118,20 +118,20 @@ namespace caelus::core::vulkan {
         caelus::logger::info("Swapchain images successfully created");
     }
 
-    types::detail::SwapchainDetails get_swapchain_details(const Window& window, const types::detail::VulkanData& data) {
-        auto capabilities = data.device_details.physical_device.getSurfaceCapabilitiesKHR(data.surface);
+    types::detail::SwapchainDetails get_swapchain_details(const Window& window, const types::detail::VulkanContext& ctx) {
+        auto capabilities = ctx.device_details.physical_device.getSurfaceCapabilitiesKHR(ctx.surface);
 
         types::detail::SwapchainDetails details{};
 
         details.image_count = get_image_count(capabilities);
         details.extent = get_extent(window, capabilities);
-        details.format = get_format(data.device_details, data.surface);
-        details.present_mode = get_present_mode(data.device_details, data.surface);
+        details.format = get_format(ctx.device_details, ctx.surface);
+        details.present_mode = get_present_mode(ctx.device_details, ctx.surface);
 
         details.surface_transform = capabilities.currentTransform;
 
-        get_swapchain(data.device_details, data.surface, details);
-        create_images(data.device_details, details);
+        get_swapchain(ctx.device_details, ctx.surface, details);
+        create_images(ctx.device_details, details);
 
         return details;
     }

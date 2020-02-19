@@ -6,7 +6,7 @@
 #include <vector>
 
 namespace caelus::core::types::detail {
-    struct VulkanData;
+    struct VulkanContext;
 } // namespace caelus::core::types::detail
 
 namespace caelus::core::components::buffers {
@@ -16,7 +16,8 @@ namespace caelus::core::components::buffers {
 
         InstanceBuffer() = default;
 
-        void allocate(const std::vector<glm::mat4>&, const types::detail::VulkanData&);
+        void allocate(const std::vector<glm::mat4>&, const types::detail::VulkanContext&);
+        void deallocate(const types::detail::VulkanContext&);
     };
 } // namespace caelus::core::components::buffers
 

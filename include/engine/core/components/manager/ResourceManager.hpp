@@ -13,16 +13,16 @@ namespace caelus::core::types::info {
 
 namespace caelus::core::manager {
     class ResourceManager {
-        std::vector<components::Mesh> meshes;
-        std::unordered_map<u32, vulkan::Pipeline> pipelines;
+        static inline std::vector<components::Mesh> meshes{};
+        static inline std::unordered_map<u32, vulkan::Pipeline> pipelines{};
     public:
-        ResourceManager() = default;
+        ResourceManager() = delete;
 
-        void add_mesh(const components::Mesh&);
-        void add_pipeline(const types::info::PipelineCreateInfo&);
+        static void add_mesh(const components::Mesh&);
+        static void add_pipeline(const types::info::PipelineCreateInfo&);
 
-        [[nodiscard]] vulkan::Pipeline get_pipeline(const u32) const;
-        [[nodiscard]] const std::vector<components::Mesh>& get_meshes() const;
+        [[nodiscard]] static vulkan::Pipeline get_pipeline(const u32);
+        [[nodiscard]] static const std::vector<components::Mesh>& get_meshes();
     };
 } // namespace caelus::core::manager
 

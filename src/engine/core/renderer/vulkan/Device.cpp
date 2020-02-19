@@ -1,7 +1,7 @@
 #include "vulkan/vulkan.hpp"
 #include "engine/logger/Logger.hpp"
 #include "engine/core/renderer/Renderer.hpp"
-#include "engine/core/details/VulkanData.hpp"
+#include "engine/core/details/VulkanContext.hpp"
 #include "engine/core/renderer/vulkan/Device.hpp"
 
 namespace caelus::core::vulkan {
@@ -65,18 +65,18 @@ namespace caelus::core::vulkan {
         return device.getQueue(queue_family, 0);
     }
 
-    types::detail::DeviceDetails get_device_details(const types::detail::VulkanData& data) {
+    types::detail::DeviceDetails get_device_details(const types::detail::VulkanContext& ctx) {
         types::detail::DeviceDetails device_details{};
 
-        device_details.physical_device = get_physical_device(data.instance);
-        device_details.queue_family = get_queue_family(data.surface, device_details.physical_device);
+        device_details.physical_device = get_physical_device(ctx.instance);
+        device_details.queue_family = get_queue_family(ctx.surface, device_details.physical_device);
         device_details.device = get_device(device_details.queue_family, device_details.physical_device);
         device_details.queue = get_queue(device_details.device, device_details.queue_family);
 
         return device_details;
     }
 
-    u32 find_memory_type(const types::detail::VulkanData& data, const u32 mask, const vk::MemoryPropertyFlags& flags) {
+    u32 find_memory_type(const types::detail::VulkanContext& data, const u32 mask, const vk::MemoryPropertyFlags& flags) {
         const vk::PhysicalDeviceMemoryProperties memory_properties = data.device_details.physical_device.getMemoryProperties();
 
         for (u32 i = 0; i < memory_properties.memoryTypeCount; ++i) {

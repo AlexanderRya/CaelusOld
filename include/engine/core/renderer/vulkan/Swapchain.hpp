@@ -12,7 +12,7 @@ namespace caelus::core {
 } // namespace caelus::core
 
 namespace caelus::core::vulkan {
-    [[nodiscard]] types::detail::SwapchainDetails get_swapchain_details(const Window&, const types::detail::VulkanData&);
+    [[nodiscard]] types::detail::SwapchainDetails get_swapchain_details(const Window&, const types::detail::VulkanContext&);
 } // namespace caelus::core::vulkan
 
 #endif //CAELUS_SWAPCHAIN_HPP

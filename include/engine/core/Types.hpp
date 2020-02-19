@@ -24,6 +24,11 @@ namespace caelus::core::types {
         glm::vec3 pos;
         glm::vec2 tx_coords;
     };
+
+    struct TransformUBO {
+        glm::mat4 pv_mat;
+        glm::mat4 model;
+    };
 }
 
 #endif //CAELUS_TYPES_HPP

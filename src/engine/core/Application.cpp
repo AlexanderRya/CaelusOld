@@ -1,8 +1,14 @@
+#include "engine/core/components/manager/DescriptorLayoutManager.hpp"
+#include "engine/core/components/manager/DescriptorSetManager.hpp"
+#include "engine/core/components/manager/PipelineLayoutManager.hpp"
+#include "engine/core/components/manager/ResourceManager.hpp"
 #include "engine/core/components/buffers/VertexBuffer.hpp"
-#include "engine/core/renderer/vulkan/Pipeline.hpp"
+#include "engine/core/renderer/vulkan/DescriptorSet.hpp"
+#include "engine/core/info/DescriptorSetCreateInfo.hpp"
 #include "engine/core/info/PipelineCreateInfo.hpp"
 #include "engine/core/components/Mesh.hpp"
 #include "engine/core/Application.hpp"
+#include "engine/core/Types.hpp"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -17,39 +23,68 @@ namespace caelus::core {
     }
 
     void Application::load_shaders() {
-        const auto& data = renderer.vulkan_data;
+        const auto& ctx = renderer.context;
 
-        /* Load layouts */ {
+        /* Load descriptor set layouts */ {
+            vk::DescriptorSetLayoutBinding layout_binding{}; {
+                layout_binding.binding = 0;
+                layout_binding.descriptorType = vk::DescriptorType::eUniformBuffer;
+                layout_binding.descriptorCount = 1;
+                layout_binding.pImmutableSamplers = nullptr;
+                layout_binding.stageFlags = vk::ShaderStageFlagBits::eVertex;
+            }
+
+            vk::DescriptorSetLayoutCreateInfo descriptor_set_layout{}; {
+                descriptor_set_layout.bindingCount = 1;
+                descriptor_set_layout.pBindings = &layout_binding;
+            }
+
+            manager::DescriptorLayoutManager::add_layout(0, ctx.device_details.device.createDescriptorSetLayout(descriptor_set_layout));
+        }
+
+        /* Load descriptor sets */ {
+            types::info::DescriptorSetCreateInfo create_info{}; {
+                create_info.type = experimental::components::buffers::BufferType::ActiveType::UniformBuffer;
+                create_info.binding = 0;
+                create_info.ctx = &ctx;
+                create_info.layout_id = 0;
+            }
+
+            manager::DescriptorSetManager::add_descriptor_set(
+                0, vulkan::create_sets(create_info));
+        }
+
+        /* Load pipeline layouts */ {
             vk::PipelineLayoutCreateInfo pipeline_layout{}; {
                 pipeline_layout.pushConstantRangeCount = 0;
                 pipeline_layout.pPushConstantRanges = nullptr;
-                pipeline_layout.setLayoutCount = 0;
-                pipeline_layout.pSetLayouts = nullptr;
+                pipeline_layout.setLayoutCount = 1;
+                pipeline_layout.pSetLayouts = &manager::DescriptorLayoutManager::get_layout(0);
             }
 
-            pipeline_layout_manager.add_layout(0, data.device_details.device.createPipelineLayout(pipeline_layout));
+            manager::PipelineLayoutManager::add_layout(0, ctx.device_details.device.createPipelineLayout(pipeline_layout));
         }
 
         /* test.spv */ {
             types::info::PipelineCreateInfo info{}; {
                 info.subpass_index = 0;
                 info.id = 0;
-                info.device = data.device_details.device;
-                info.render_pass = data.render_passes[0];
+                info.device = ctx.device_details.device;
+                info.render_pass = ctx.render_passes[0];
 
                 info.vertex_path = "../resources/shaders/test.vert.spv";
                 info.fragment_path = "../resources/shaders/test.frag.spv";
 
-                info.pipeline_layout = pipeline_layout_manager.get_layout(0);
+                info.pipeline_layout = manager::PipelineLayoutManager::get_layout(0);
             }
 
-            resource_manager.add_pipeline(info);
+            manager::ResourceManager::add_pipeline(info);
         }
     }
 
     void Application::run() {
         while (!window.should_close()) {
-            renderer.draw(resource_manager);
+            renderer.draw();
             window.poll_events();
         }
     }
@@ -66,10 +101,10 @@ namespace caelus::core {
                 { { -0.5f, 0.5f, 0.0f }, {} },
                 { { 0.5f, 0.5f, 0.0f }, {} },
             };
-            triangle.vertex_buffer.allocate(triangle.vertices, renderer.vulkan_data);
-            triangle.instance_buffer.allocate(triangle.instances, renderer.vulkan_data);
+            triangle.vertex_buffer.allocate(triangle.vertices, renderer.context);
+            triangle.instance_buffer.allocate(triangle.instances, renderer.context);
         }
 
-        resource_manager.add_mesh(triangle);
+        manager::ResourceManager::add_mesh(triangle);
     }
 } // namespace caelus::core

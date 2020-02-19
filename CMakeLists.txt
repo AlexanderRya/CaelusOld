@@ -24,7 +24,7 @@ set(CAELUS_HEADERS
         include/engine/core/renderer/Renderer.hpp
         include/engine/core/Window.hpp
         include/engine/core/Types.hpp
-        include/engine/core/details/VulkanData.hpp
+        include/engine/core/details/VulkanContext.hpp
         include/engine/core/renderer/vulkan/Device.hpp
         include/engine/core/Callbacks.hpp
         include/engine/core/details/Details.hpp
@@ -49,7 +49,10 @@ set(CAELUS_HEADERS
         include/engine/core/components/buffers/VertexBuffer.hpp
         include/engine/core/components/buffers/InstanceBuffer.hpp
         include/engine/core/components/manager/PipelineLayoutManager.hpp
-        include/engine/core/components/manager/DescriptorLayoutManager.hpp include/engine/core/renderer/vulkan/DescriptorSet.hpp)
+        include/engine/core/components/manager/DescriptorLayoutManager.hpp
+        include/engine/core/components/Camera.hpp
+        include/engine/core/renderer/vulkan/DescriptorSet.hpp
+        include/engine/core/components/manager/DescriptorSetManager.hpp include/engine/core/info/DescriptorSetCreateInfo.hpp)
 
 set(CAELUS_SOURCES
         src/main.cpp
@@ -74,7 +77,11 @@ set(CAELUS_SOURCES
         src/engine/core/components/buffers/InstanceBuffer.cpp
         src/engine/core/components/manager/PipelineLayoutManager.cpp
         src/engine/core/components/manager/DescriptorLayoutManager.cpp
-        src/engine/core/components/manager/DescriptorLayoutManager.cpp)
+        include/engine/core/components/buffers/UniformBuffer.hpp
+        src/engine/core/components/buffers/UniformBuffer.cpp
+        include/engine/experimental/BufferContainer.hpp
+        src/engine/core/components/manager/DescriptorSetManager.cpp
+        src/engine/core/renderer/vulkan/DescriptorSet.cpp)
 
 add_executable(Caelus
         ${CAELUS_HEADERS}
@@ -84,29 +91,29 @@ target_compile_options(Caelus PRIVATE -std=c++2a -O3 -Wall -Wextra -Werror -peda
 
 if (WIN32)
     target_compile_definitions(Caelus PRIVATE _CRT_SECURE_NO_WARNINGS)
-endif ()
+endif()
 
 if (UNIX)
     if (CMAKE_BUILD_TYPE MATCHES Debug)
         target_compile_definitions(Caelus PRIVATE _GLIBCXX_DEBUG)
-    endif ()
-endif ()
+    endif()
+endif()
 
 if (CMAKE_BUILD_TYPE MATCHES Debug)
     target_compile_definitions(Caelus PRIVATE CAELUS_DEBUG)
 else()
     target_compile_definitions(Caelus PRIVATE CAELUS_DISABLE_LOGGING)
-endif ()
+endif()
 
 if (UNIX)
     set_target_properties(
             glfw fmt
             PROPERTIES
             COMPILE_OPTIONS -Wno-everything)
-endif ()
+endif()
 
 if (WIN32)
     target_link_libraries(Caelus ${Vulkan_LIBRARIES} glfw fmt)
 elseif (UNIX)
     target_link_libraries(Caelus ${Vulkan_LIBRARIES} glfw fmt pthread)
-endif ()
+endif()

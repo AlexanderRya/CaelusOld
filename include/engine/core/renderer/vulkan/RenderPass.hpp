@@ -6,11 +6,11 @@ namespace vk {
 } // namespace vk
 
 namespace caelus::core::types::detail {
-    struct VulkanData;
+    struct VulkanContext;
 } // namespace caelus::core::types::detail
 
 namespace caelus::core::vulkan {
-    [[nodiscard]] vk::RenderPass make_default_render_pass(const types::detail::VulkanData&);
+    [[nodiscard]] vk::RenderPass make_default_render_pass(const types::detail::VulkanContext&);
 } // namespace caelus::core::vulkan
 
 #endif //CAELUS_RENDERPASS_HPP

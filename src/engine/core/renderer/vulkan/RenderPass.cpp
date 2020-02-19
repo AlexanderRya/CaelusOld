@@ -1,12 +1,12 @@
 #include "engine/core/renderer/vulkan/RenderPass.hpp"
-#include "engine/core/details/VulkanData.hpp"
+#include "engine/core/details/VulkanContext.hpp"
 #include "engine/logger/Logger.hpp"
 #include "vulkan/vulkan.hpp"
 
 namespace caelus::core::vulkan {
-    vk::RenderPass make_default_render_pass(const types::detail::VulkanData& data) {
+    vk::RenderPass make_default_render_pass(const types::detail::VulkanContext& ctx) {
         vk::AttachmentDescription attachment_description{}; {
-            attachment_description.format = data.swapchain_details.format.format;
+            attachment_description.format = ctx.swapchain_details.format.format;
             attachment_description.samples = vk::SampleCountFlagBits::e1;
             attachment_description.loadOp = vk::AttachmentLoadOp::eClear;
             attachment_description.storeOp = vk::AttachmentStoreOp::eStore;
@@ -45,7 +45,7 @@ namespace caelus::core::vulkan {
             render_pass_create_info.pDependencies = &subpass_dependency;
         }
 
-        auto render_pass = data.device_details.device.createRenderPass(render_pass_create_info);
+        auto render_pass = ctx.device_details.device.createRenderPass(render_pass_create_info);
 
         logger::info("Default renderpass successfully created, index: ", 0);
 

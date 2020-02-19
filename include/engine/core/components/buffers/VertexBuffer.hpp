@@ -5,7 +5,7 @@
 #include <vector>
 
 namespace caelus::core::types::detail {
-    struct VulkanData;
+    struct VulkanContext;
 } // namespace caelus::core::types::detail
 
 namespace caelus::core::types {
@@ -19,7 +19,8 @@ namespace caelus::core::components::buffers {
 
         VertexBuffer() = default;
 
-        void allocate(const std::vector<types::Vertex>&, const types::detail::VulkanData&);
+        void allocate(const std::vector<types::Vertex>&, const types::detail::VulkanContext&);
+        void deallocate(const types::detail::VulkanContext&);
     };
 } // namespace caelus::core::components::buffers
 

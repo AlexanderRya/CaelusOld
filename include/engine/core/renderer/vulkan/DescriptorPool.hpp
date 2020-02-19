@@ -6,11 +6,11 @@ namespace vk {
 } // namespace vk
 
 namespace caelus::core::types::detail {
-    struct VulkanData;
+    struct VulkanContext;
 } // namespace caelus::core::types::detail
 
 namespace caelus::core::vulkan {
-    [[nodiscard]] vk::DescriptorPool make_descriptor_pool(const types::detail::VulkanData&);
+    [[nodiscard]] vk::DescriptorPool make_descriptor_pool(const types::detail::VulkanContext&);
 } // namespace caelus::core::vulkan
 
 #endif //CAELUS_DESCRIPTORPOOL_HPP

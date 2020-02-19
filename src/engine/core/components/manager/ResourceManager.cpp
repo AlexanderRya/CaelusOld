@@ -15,11 +15,11 @@ namespace caelus::core::manager {
         pipelines[info.id].create(info);
     }
 
-    vulkan::Pipeline ResourceManager::get_pipeline(const u32 id) const {
+    vulkan::Pipeline ResourceManager::get_pipeline(const u32 id) {
         return pipelines.at(id);
     }
 
-    const std::vector<components::Mesh>& ResourceManager::get_meshes() const {
+    const std::vector<components::Mesh>& ResourceManager::get_meshes() {
         return meshes;
     }
 } // namespace caelus::core::manager

@@ -9,12 +9,12 @@ namespace vk {
 } // namespace vk
 
 namespace caelus::core::types::detail {
-    struct VulkanData;
+    struct VulkanContext;
 } // namespace caelus::core::types::detail
 
 namespace caelus::core::vulkan {
     [[nodiscard]] vk::Instance get_instance();
-    [[nodiscard]] vk::DebugUtilsMessengerEXT install_validation_layers(const types::detail::VulkanData&);
+    [[nodiscard]] vk::DebugUtilsMessengerEXT install_validation_layers(const types::detail::VulkanContext&);
 } // namespace caelus::core::vulkan
 
 #endif //CAELUS_INSTANCE_HPP

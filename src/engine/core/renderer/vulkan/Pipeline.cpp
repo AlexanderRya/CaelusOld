@@ -8,7 +8,7 @@
 
 namespace caelus::core::vulkan {
     static vk::ShaderModule load_module(const vk::Device& device, const std::filesystem::path& path) {
-        std::ifstream in(path.generic_string());
+        std::ifstream in(path.generic_string(), std::fstream::binary);
 
         if (!in.is_open()) {
             throw std::runtime_error("Error, \"" + path.filename().generic_string() + "\" file not found.");

@@ -1,12 +1,12 @@
-#ifndef CAELUS_VULKANDATA_HPP
-#define CAELUS_VULKANDATA_HPP
+#ifndef CAELUS_VULKANCONTEXT_HPP
+#define CAELUS_VULKANCONTEXT_HPP
 
 #include "engine/core/details/Details.hpp"
 #include "engine/core/Window.hpp"
 #include "vulkan/vulkan.hpp"
 
 namespace caelus::core::types::detail {
-    struct VulkanData {
+    struct VulkanContext {
         // Main vulkan data
         vk::Instance instance;
         vk::DebugUtilsMessengerEXT validation;
@@ -25,4 +25,4 @@ namespace caelus::core::types::detail {
     };
 } // caelus::core::types::detail
 
-#endif //CAELUS_VULKANDATA_HPP
+#endif //CAELUS_VULKANCONTEXT_HPP

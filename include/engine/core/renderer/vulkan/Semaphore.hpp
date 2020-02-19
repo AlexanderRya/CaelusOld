@@ -9,11 +9,11 @@ namespace vk {
 } // namespace vk
 
 namespace caelus::core::types::detail {
-    struct VulkanData;
+    struct VulkanContext;
 } // namespace caelus::core::types::detail
 
 namespace caelus::core::vulkan {
-    [[nodiscard]] std::vector<vk::Semaphore> make_semaphores(const u32, const types::detail::VulkanData&);
+    [[nodiscard]] std::vector<vk::Semaphore> make_semaphores(const u32, const types::detail::VulkanContext&);
 } // namespace caelus::core::vulkan
 
 #endif //CAELUS_SEMAPHORE_HPP

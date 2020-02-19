@@ -9,7 +9,7 @@ namespace vk {
 } // namespace vk
 
 namespace caelus::core::types::detail {
-    struct VulkanData;
+    struct VulkanContext;
 } // namespace caelus::core::types::details
 
 namespace caelus::core {
@@ -17,7 +17,7 @@ namespace caelus::core {
 } // namespace caelus::core
 
 namespace caelus::core::vulkan {
-    std::vector<vk::Framebuffer> get_framebuffers(const u32, const Window&, const types::detail::VulkanData&);
+    std::vector<vk::Framebuffer> get_framebuffers(const u32, const Window&, const types::detail::VulkanContext&);
 } // namespace caelus::core::vulkan
 
 #endif //CAELUS_FRAMEBUFFER_HPP

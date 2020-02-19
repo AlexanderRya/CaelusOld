@@ -7,12 +7,12 @@
 
 namespace caelus::core::manager {
     class DescriptorLayoutManager {
-        std::unordered_map<u32, vk::DescriptorSetLayout> layouts;
+        static inline std::unordered_map<u32, vk::DescriptorSetLayout> layouts{};
     public:
         DescriptorLayoutManager() = default;
 
-        void add_layout(const u32, const vk::DescriptorSetLayout&);
-        vk::DescriptorSetLayout get_layout(const u32) const;
+        static void add_layout(const u32, const vk::DescriptorSetLayout&);
+        [[nodiscard]] static vk::DescriptorSetLayout& get_layout(const u32);
     };
 } // namespace caelus::core::manager
 

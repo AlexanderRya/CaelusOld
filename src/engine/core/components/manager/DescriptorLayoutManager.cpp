@@ -10,7 +10,7 @@ namespace caelus::core::manager {
         layouts[id] = layout;
     }
 
-    vk::DescriptorSetLayout DescriptorLayoutManager::get_layout(const u32 id) const {
+    vk::DescriptorSetLayout& DescriptorLayoutManager::get_layout(const u32 id) {
         return layouts.at(id);
     }
 } // namespace caelus::core::manager

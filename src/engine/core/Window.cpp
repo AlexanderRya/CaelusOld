@@ -1,4 +1,4 @@
-#include "engine/core/details/VulkanData.hpp"
+#include "engine/core/details/VulkanContext.hpp"
 #include "engine/core/Callbacks.hpp"
 #include "engine/logger/Logger.hpp"
 #include "engine/core/Window.hpp"
@@ -30,11 +30,11 @@ namespace caelus::core {
         caelus::logger::info("Window successfully created with size: ", width, "x", height);
     }
 
-    vk::SurfaceKHR Window::create_surface(const types::detail::VulkanData& data) const {
+    vk::SurfaceKHR Window::create_surface(const types::detail::VulkanContext& ctx) const {
         vk::SurfaceKHR surface;
 
         glfwCreateWindowSurface(
-            data.instance,
+            ctx.instance,
             window,
             nullptr,
             reinterpret_cast<VkSurfaceKHR*>(&surface));

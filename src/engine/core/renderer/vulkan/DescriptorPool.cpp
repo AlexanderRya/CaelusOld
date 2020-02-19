@@ -1,10 +1,10 @@
 #include "engine/core/renderer/vulkan/DescriptorPool.hpp"
-#include "engine/core/details/VulkanData.hpp"
+#include "engine/core/details/VulkanContext.hpp"
 #include "engine/logger/Logger.hpp"
 #include "vulkan/vulkan.hpp"
 
 namespace caelus::core::vulkan {
-    vk::DescriptorPool make_descriptor_pool(const types::detail::VulkanData& data) {
+    vk::DescriptorPool make_descriptor_pool(const types::detail::VulkanContext& ctx) {
         std::array<vk::DescriptorPoolSize, 11> descriptor_pool_sizes{ {
             { vk::DescriptorType::eSampler, 1000 },
             { vk::DescriptorType::eCombinedImageSampler, 1000 },
@@ -25,7 +25,7 @@ namespace caelus::core::vulkan {
             descriptor_pool_create_info.maxSets = descriptor_pool_sizes.size() * 1000;
         }
 
-        auto pool = data.device_details.device.createDescriptorPool(descriptor_pool_create_info);
+        auto pool = ctx.device_details.device.createDescriptorPool(descriptor_pool_create_info);
 
         logger::info("Descriptor pool successfully created, sizes:");
         for (const auto& [type, count] : descriptor_pool_sizes) {

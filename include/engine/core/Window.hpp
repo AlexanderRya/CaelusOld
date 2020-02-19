@@ -11,7 +11,7 @@ namespace vk {
 } // namespace vk
 
 namespace caelus::core::types::detail {
-    struct VulkanData;
+    struct VulkanContext;
 } // namespace caelus::core::types::detail
 
 namespace caelus::core {
@@ -29,7 +29,7 @@ namespace caelus::core {
         Window& operator =(Window&&) = delete;
 
         void create(const i32, const i32, const char*);
-        [[nodiscard]] vk::SurfaceKHR create_surface(const types::detail::VulkanData&) const;
+        [[nodiscard]] vk::SurfaceKHR create_surface(const types::detail::VulkanContext&) const;
 
         void poll_events() const;
         void close() const;

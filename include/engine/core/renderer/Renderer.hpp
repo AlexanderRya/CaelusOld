@@ -1,27 +1,24 @@
 #ifndef CAELUS_RENDERER_HPP
 #define CAELUS_RENDERER_HPP
 
-#include "engine/core/details/VulkanData.hpp"
+#include "engine/core/details/VulkanContext.hpp"
 
 namespace caelus::core {
     class Window;
 
-    namespace manager {
-        class ResourceManager;
-    } // namespace caelus::core::manager
-
     class Renderer {
-        u32 current_frame;
-        u32 image_index;
+        u32 current_frame{};
+        u32 image_index{};
 
-        void record_buffers(const manager::ResourceManager&);
+        void record_buffers();
+        void update_sets(const u32 set_id);
     public:
-        types::detail::VulkanData vulkan_data;
+        types::detail::VulkanContext context;
 
         Renderer() = default;
 
         void init(const Window&);
-        void draw(const manager::ResourceManager&);
+        void draw();
     };
 } // namespace caelus::core
 
