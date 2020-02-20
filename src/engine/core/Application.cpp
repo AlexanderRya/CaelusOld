@@ -1,6 +1,6 @@
 #include "engine/core/components/manager/DescriptorLayoutManager.hpp"
-#include "engine/core/components/manager/DescriptorSetManager.hpp"
 #include "engine/core/components/manager/PipelineLayoutManager.hpp"
+#include "engine/core/components/manager/DescriptorSetManager.hpp"
 #include "engine/core/components/manager/ResourceManager.hpp"
 #include "engine/core/components/buffers/VertexBuffer.hpp"
 #include "engine/core/renderer/vulkan/DescriptorSet.hpp"
@@ -43,15 +43,15 @@ namespace caelus::core {
         }
 
         /* Load descriptor sets */ {
-            types::info::DescriptorSetCreateInfo create_info{}; {
-                create_info.type = experimental::components::buffers::BufferType::ActiveType::UniformBuffer;
-                create_info.binding = 0;
-                create_info.ctx = &ctx;
-                create_info.layout_id = 0;
+            types::info::DescriptorSetCreateInfo set_create_info{}; {
+                set_create_info.layout_id = 0;
+                set_create_info.binding = 0;
+                set_create_info.ctx = &ctx;
+                set_create_info.descriptor_type = vk::DescriptorType::eUniformBuffer;
+                set_create_info.usage_flags = vk::BufferUsageFlagBits::eUniformBuffer;
             }
 
-            manager::DescriptorSetManager::add_descriptor_set(
-                0, vulkan::create_sets(create_info));
+            manager::DescriptorSetManager::add_descriptor_sets<types::TransformUBO>(0, set_create_info);
         }
 
         /* Load pipeline layouts */ {
@@ -93,13 +93,12 @@ namespace caelus::core {
         components::Mesh triangle{}; {
             triangle.pipeline_id = 0;
             triangle.instances = {
-                glm::translate(glm::mat4(1.0f), glm::vec3(.5f, 0.0f, 0.0f)),
-                glm::translate(glm::mat4(1.0f), glm::vec3(-.5f, 0.0f, 0.0f)),
+                glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)),
             };
             triangle.vertices = {
                 { { 0.0f, -0.5f, 0.0f }, {} },
-                { { -0.5f, 0.5f, 0.0f }, {} },
-                { { 0.5f, 0.5f, 0.0f }, {} },
+                { { -0.26f, 0.5f, 0.0f }, {} },
+                { { 0.26f, 0.5f, 0.0f }, {} },
             };
             triangle.vertex_buffer.allocate(triangle.vertices, renderer.context);
             triangle.instance_buffer.allocate(triangle.instances, renderer.context);

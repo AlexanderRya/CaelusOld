@@ -12,6 +12,7 @@ namespace caelus::core::manager {
         DescriptorLayoutManager() = default;
 
         static void add_layout(const u32, const vk::DescriptorSetLayout&);
+
         [[nodiscard]] static vk::DescriptorSetLayout& get_layout(const u32);
     };
 } // namespace caelus::core::manager

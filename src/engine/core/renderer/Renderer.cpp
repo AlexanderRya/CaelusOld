@@ -136,8 +136,8 @@ namespace caelus::core {
                 vk::PipelineBindPoint::eGraphics,
                 manager::PipelineLayoutManager::get_layout(mesh.pipeline_layout_id),
                 0,
-                manager::DescriptorSetManager::get_descriptor_set(mesh.descriptor_set_id)[current_frame].descriptor_set,
-                {});
+                manager::DescriptorSetManager::get_descriptor_sets<types::TransformUBO>(mesh.descriptor_set_id)[current_frame].descriptor_set,
+                nullptr);
             context.command_buffers[image_index].draw(mesh.vertices.size(), mesh.instances.size(), 0, 0);
         }
 
@@ -151,8 +151,8 @@ namespace caelus::core {
             ubo.pv_mat = glm::mat4(1.0f);
         }
 
-        for (auto& each : manager::DescriptorSetManager::get_descriptor_set(set_id)) {
-            each.write(ubo);
+        for (auto& each : manager::DescriptorSetManager::get_descriptor_sets<types::TransformUBO>(set_id)) {
+            each.write({ ubo }, context);
         }
     }
 } // namespace caelus::core

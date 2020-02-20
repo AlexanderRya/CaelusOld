@@ -12,6 +12,7 @@ namespace caelus::core::manager {
         PipelineLayoutManager() = delete;
 
         static void add_layout(const u32, const vk::PipelineLayout&);
+
         static vk::PipelineLayout& get_layout(const u32);
     };
 } // namespace caelus::core::manager

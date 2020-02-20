@@ -110,8 +110,8 @@ namespace caelus::core::components::buffers {
         logger::info("Successfully allocated instance buffer with size (in bytes): ", instances.size() * sizeof(glm::mat4));
     }
 
-    void InstanceBuffer::deallocate(const types::detail::VulkanContext& data) {
-        data.device_details.device.freeMemory(memory);
-        data.device_details.device.destroyBuffer(buffer);
+    void InstanceBuffer::deallocate(const types::detail::VulkanContext& ctx) {
+        ctx.device_details.device.freeMemory(memory);
+        ctx.device_details.device.destroyBuffer(buffer);
     }
 } // namespace caelus::core::components::buffers

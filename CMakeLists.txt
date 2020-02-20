@@ -49,10 +49,11 @@ set(CAELUS_HEADERS
         include/engine/core/components/buffers/VertexBuffer.hpp
         include/engine/core/components/buffers/InstanceBuffer.hpp
         include/engine/core/components/manager/PipelineLayoutManager.hpp
-        include/engine/core/components/manager/DescriptorLayoutManager.hpp
         include/engine/core/components/Camera.hpp
         include/engine/core/renderer/vulkan/DescriptorSet.hpp
-        include/engine/core/components/manager/DescriptorSetManager.hpp include/engine/core/info/DescriptorSetCreateInfo.hpp)
+        include/engine/core/info/DescriptorSetCreateInfo.hpp
+        include/engine/core/components/manager/DescriptorSetManager.hpp
+        include/engine/core/renderer/vulkan/DescriptorSet.hpp)
 
 set(CAELUS_SOURCES
         src/main.cpp
@@ -76,18 +77,13 @@ set(CAELUS_SOURCES
         src/engine/core/components/buffers/VertexBuffer.cpp
         src/engine/core/components/buffers/InstanceBuffer.cpp
         src/engine/core/components/manager/PipelineLayoutManager.cpp
-        src/engine/core/components/manager/DescriptorLayoutManager.cpp
-        include/engine/core/components/buffers/UniformBuffer.hpp
-        src/engine/core/components/buffers/UniformBuffer.cpp
-        include/engine/experimental/BufferContainer.hpp
-        src/engine/core/components/manager/DescriptorSetManager.cpp
-        src/engine/core/renderer/vulkan/DescriptorSet.cpp)
+        src/engine/core/components/manager/DescriptorLayoutManager.cpp)
 
 add_executable(Caelus
         ${CAELUS_HEADERS}
         ${CAELUS_SOURCES})
 
-target_compile_options(Caelus PRIVATE -std=c++2a -O3 -Wall -Wextra -Werror -pedantic)
+target_compile_options(Caelus PRIVATE -std=c++20 -O3 -Wall -Wextra -Werror -pedantic)
 
 if (WIN32)
     target_compile_definitions(Caelus PRIVATE _CRT_SECURE_NO_WARNINGS)

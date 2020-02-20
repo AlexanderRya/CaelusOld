@@ -110,8 +110,8 @@ namespace caelus::core::components::buffers {
         logger::info("Successfully allocated vertex buffer with size (in bytes): ", vertices.size() * sizeof(types::Vertex));
     }
 
-    void VertexBuffer::deallocate(const types::detail::VulkanContext& data) {
-        data.device_details.device.freeMemory(memory);
-        data.device_details.device.destroyBuffer(buffer);
+    void VertexBuffer::deallocate(const types::detail::VulkanContext& ctx) {
+        ctx.device_details.device.freeMemory(memory);
+        ctx.device_details.device.destroyBuffer(buffer);
     }
 } // namespace caelus::core::components::buffers
