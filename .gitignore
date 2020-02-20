@@ -1,5 +1,6 @@
 # Project exclude paths
 cmake-build-debug/
 cmake-build-release/
-.idea/
+../.idea/
 *.iml
+.idea/GrepConsole.xml

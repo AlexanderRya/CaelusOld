@@ -77,7 +77,7 @@ set(CAELUS_SOURCES
         src/engine/core/components/manager/PipelineLayoutManager.cpp
         src/engine/core/util/Util.cpp
         src/engine/core/renderer/vulkan/DescriptorSet.cpp
-        src/engine/core/components/buffers/DescriptorBuffer.cpp)
+        src/engine/core/components/buffers/DescriptorBuffer.cpp src/engine/core/components/Camera.cpp)
 
 add_executable(Caelus
         ${CAELUS_HEADERS}
