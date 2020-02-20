@@ -5,13 +5,16 @@
 
 namespace caelus::core {
     class Window;
+    namespace vulkan {
+        struct DescriptorSet;
+    } // namespace caelus::core::vulkan
 
     class Renderer {
         u32 current_frame{};
         u32 image_index{};
 
         void record_buffers();
-        void update_sets(const u32 set_id);
+        void update_sets(const std::vector<vulkan::DescriptorSet>& descriptor_sets);
     public:
         types::detail::VulkanContext context;
 

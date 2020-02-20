@@ -2,15 +2,19 @@
 #include "engine/logger/Logger.hpp"
 
 namespace caelus::core::manager {
-    void PipelineLayoutManager::add_layout(const u32 id, const vk::PipelineLayout& layout) {
+    void PipelineLayoutManager::add_layout(
+        const u32 id,
+        const vk::PipelineLayout& pipeline_layout,
+        const vk::DescriptorSetLayout& set_layout) {
+
         if (layouts.contains(id)) {
             logger::warning("Pipeline layout with id: ", id, " already exists, overwriting.");
         }
 
-        layouts[id] = layout;
+        layouts[id] = { pipeline_layout, set_layout };
     }
 
-    vk::PipelineLayout& PipelineLayoutManager::get_layout(const u32 id) {
+    types::detail::PipelineLayout& PipelineLayoutManager::get_layout(const u32 id) {
         return layouts.at(id);
     }
 } // namespace caelus::core::manager

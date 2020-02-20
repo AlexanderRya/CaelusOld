@@ -37,7 +37,7 @@ set(CAELUS_HEADERS
         include/engine/core/renderer/vulkan/RenderPass.hpp
         include/engine/core/Constants.hpp
         include/engine/core/renderer/vulkan/Framebuffer.hpp
-        include/engine/core/info/PipelineCreateInfo.hpp
+        include/engine/core/info/Info.hpp
         include/engine/core/renderer/vulkan/Pipeline.hpp
         include/engine/core/util/Util.hpp
         include/engine/core/components/Mesh.hpp
@@ -51,9 +51,7 @@ set(CAELUS_HEADERS
         include/engine/core/components/manager/PipelineLayoutManager.hpp
         include/engine/core/components/Camera.hpp
         include/engine/core/renderer/vulkan/DescriptorSet.hpp
-        include/engine/core/info/DescriptorSetCreateInfo.hpp
-        include/engine/core/components/manager/DescriptorSetManager.hpp
-        include/engine/core/renderer/vulkan/DescriptorSet.hpp)
+        include/engine/core/components/buffers/DescriptorBuffer.hpp)
 
 set(CAELUS_SOURCES
         src/main.cpp
@@ -68,7 +66,7 @@ set(CAELUS_SOURCES
         src/engine/core/renderer/vulkan/Framebuffer.cpp
         src/engine/core/renderer/vulkan/DescriptorPool.cpp
         src/engine/core/renderer/vulkan/Pipeline.cpp
-        src/engine/core/info/PipelineCreateInfo.cpp
+        src/engine/core/info/Info.cpp
         src/engine/core/Callbacks.cpp
         src/engine/core/components/manager/ResourceManager.cpp
         src/engine/core/renderer/vulkan/CommandBuffer.cpp
@@ -77,7 +75,9 @@ set(CAELUS_SOURCES
         src/engine/core/components/buffers/VertexBuffer.cpp
         src/engine/core/components/buffers/InstanceBuffer.cpp
         src/engine/core/components/manager/PipelineLayoutManager.cpp
-        src/engine/core/components/manager/DescriptorLayoutManager.cpp)
+        src/engine/core/util/Util.cpp
+        src/engine/core/renderer/vulkan/DescriptorSet.cpp
+        src/engine/core/components/buffers/DescriptorBuffer.cpp)
 
 add_executable(Caelus
         ${CAELUS_HEADERS}
@@ -107,6 +107,11 @@ if (UNIX)
             PROPERTIES
             COMPILE_OPTIONS -Wno-everything)
 endif()
+
+add_custom_command(
+        TARGET Caelus
+        COMMAND echo Compiling shaders &&
+        ../compile_shaders.sh)
 
 if (WIN32)
     target_link_libraries(Caelus ${Vulkan_LIBRARIES} glfw fmt)

@@ -2,11 +2,7 @@
 #define CAELUS_DEVICE_HPP
 
 #include "engine/core/Types.hpp"
-
-namespace vk {
-    class Instance;
-    class SurfaceKHR;
-} // namespace vk
+#include "vulkan/vulkan.hpp"
 
 namespace caelus::core::types::detail {
     struct DeviceDetails;

@@ -1,5 +1,5 @@
 #include "engine/core/renderer/vulkan/Pipeline.hpp"
-#include "engine/core/info/PipelineCreateInfo.hpp"
+#include "engine/core/info/Info.hpp"
 #include "engine/logger/Logger.hpp"
 #include "vulkan/vulkan.hpp"
 

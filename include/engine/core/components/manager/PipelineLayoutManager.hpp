@@ -4,16 +4,17 @@
 #include <unordered_map>
 #include "vulkan/vulkan.hpp"
 #include "engine/core/Types.hpp"
+#include "engine/core/details/Details.hpp"
 
 namespace caelus::core::manager {
     class PipelineLayoutManager {
-        static inline std::unordered_map<u32, vk::PipelineLayout> layouts{};
+        static inline std::unordered_map<u32, types::detail::PipelineLayout> layouts{};
     public:
         PipelineLayoutManager() = delete;
 
-        static void add_layout(const u32, const vk::PipelineLayout&);
+        static void add_layout(const u32, const vk::PipelineLayout&, const vk::DescriptorSetLayout&);
 
-        static vk::PipelineLayout& get_layout(const u32);
+        static types::detail::PipelineLayout& get_layout(const u32);
     };
 } // namespace caelus::core::manager
 

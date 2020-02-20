@@ -1,10 +1,14 @@
-#ifndef CAELUS_PIPELINECREATEINFO_HPP
-#define CAELUS_PIPELINECREATEINFO_HPP
+#ifndef CAELUS_INFO_HPP
+#define CAELUS_INFO_HPP
 
 #include "engine/core/Types.hpp"
 #include "vulkan/vulkan.hpp"
 
 #include <filesystem>
+
+namespace caelus::core::types::detail {
+    struct VulkanContext;
+} // namespace caelus::core::types::detail
 
 namespace caelus::core::types::info {
     struct PipelineCreateInfo {
@@ -28,6 +32,16 @@ namespace caelus::core::types::info {
 
         PipelineCreateInfo();
     };
+
+    struct DescriptorSetInfo {
+        const types::detail::VulkanContext* ctx;
+
+        vk::DescriptorType type;
+
+        u32 binding;
+        u32 buffer_id;
+        u32 layout_id;
+    };
 } // namespace caelus::core::types::info
 
-#endif //CAELUS_PIPELINECREATEINFO_HPP
+#endif //CAELUS_INFO_HPP

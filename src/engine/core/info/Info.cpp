@@ -1,4 +1,4 @@
-#include "engine/core/info/PipelineCreateInfo.hpp"
+#include "engine/core/info/Info.hpp"
 
 namespace caelus::core::types::info {
     PipelineCreateInfo::PipelineCreateInfo() {

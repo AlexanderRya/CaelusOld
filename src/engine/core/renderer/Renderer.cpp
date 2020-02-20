@@ -1,19 +1,24 @@
+#include "GLFW/glfw3.h"
 #include "engine/core/Window.hpp"
 #include "engine/core/Constants.hpp"
+#include "engine/core/info/Info.hpp"
+#include "engine/core/components/Mesh.hpp"
+#include "engine/core/details/Details.hpp"
 #include "engine/core/renderer/Renderer.hpp"
 #include "engine/core/renderer/vulkan/Fence.hpp"
 #include "engine/core/renderer/vulkan/Device.hpp"
-#include "engine/core/info/PipelineCreateInfo.hpp"
 #include "engine/core/renderer/vulkan/Instance.hpp"
+#include "engine/core/renderer/vulkan/Pipeline.hpp"
 #include "engine/core/renderer/vulkan/Swapchain.hpp"
 #include "engine/core/renderer/vulkan/Semaphore.hpp"
 #include "engine/core/renderer/vulkan/RenderPass.hpp"
 #include "engine/core/renderer/vulkan/Framebuffer.hpp"
 #include "engine/core/renderer/vulkan/CommandPool.hpp"
 #include "engine/core/renderer/vulkan/CommandBuffer.hpp"
+#include "engine/core/renderer/vulkan/DescriptorSet.hpp"
 #include "engine/core/renderer/vulkan/DescriptorPool.hpp"
 #include "engine/core/components/manager/ResourceManager.hpp"
-#include "engine/core/components/manager/DescriptorSetManager.hpp"
+#include "engine/core/components/buffers/DescriptorBuffer.hpp"
 #include "engine/core/components/manager/PipelineLayoutManager.hpp"
 
 namespace caelus::core {
@@ -124,7 +129,10 @@ namespace caelus::core {
         context.command_buffers[image_index].setScissor(0, scissor);
 
         for (const auto& mesh : manager::ResourceManager::get_meshes()) {
-            update_sets(0);
+            auto& descriptor_set = manager::ResourceManager::get_descriptor_sets(mesh.descriptor_set_id);
+            auto& layout = manager::PipelineLayoutManager::get_layout(mesh.pipeline_layout_id);
+
+            update_sets(descriptor_set);
 
             context.command_buffers[image_index].bindPipeline(
                 vk::PipelineBindPoint::eGraphics,
@@ -134,9 +142,9 @@ namespace caelus::core {
             context.command_buffers[image_index].bindVertexBuffers(1, mesh.instance_buffer.buffer, 0ul);
             context.command_buffers[image_index].bindDescriptorSets(
                 vk::PipelineBindPoint::eGraphics,
-                manager::PipelineLayoutManager::get_layout(mesh.pipeline_layout_id),
+                layout.pipeline_layout,
                 0,
-                manager::DescriptorSetManager::get_descriptor_sets<types::TransformUBO>(mesh.descriptor_set_id)[current_frame].descriptor_set,
+                descriptor_set[current_frame].details.descriptor_set,
                 nullptr);
             context.command_buffers[image_index].draw(mesh.vertices.size(), mesh.instances.size(), 0, 0);
         }
@@ -145,14 +153,14 @@ namespace caelus::core {
         context.command_buffers[image_index].end();
     }
 
-    void Renderer::update_sets(const u32 set_id) {
-        static types::TransformUBO ubo{}; {
-            ubo.model = glm::mat4(1.0f);
-            ubo.pv_mat = glm::mat4(1.0f);
-        }
+    void Renderer::update_sets(const std::vector<vulkan::DescriptorSet>& descriptor_sets) {
+        static std::vector<types::TransformUBO> ubos{
+            types::TransformUBO{ glm::mat4(1.0f), glm::mat4(1.0f) }
+        };
 
-        for (auto& each : manager::DescriptorSetManager::get_descriptor_sets<types::TransformUBO>(set_id)) {
-            each.write({ ubo }, context);
+        for (auto& each : descriptor_sets) {
+            auto& buffer = manager::ResourceManager::get_descriptor_buffers(each.details.buffer_id)[each.details.buffer_idx];
+            buffer.write(ubos.data(), ubos.size(), context);
         }
     }
 } // namespace caelus::core
