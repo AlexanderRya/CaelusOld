@@ -18,6 +18,7 @@ namespace caelus::core::vulkan {
 
         void create(const types::info::DescriptorSetInfo&);
         void bind_buffer(const u32, const types::detail::VulkanContext&);
+        void write(const void*, const usize, const types::detail::VulkanContext&);
         void update(const types::detail::VulkanContext&);
     };
 

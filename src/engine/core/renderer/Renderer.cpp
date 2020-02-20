@@ -157,7 +157,7 @@ namespace caelus::core {
         context.command_buffers[image_index].end();
     }
 
-    void Renderer::update_sets(const std::vector<vulkan::DescriptorSet>& descriptor_sets) {
+    void Renderer::update_sets(std::vector<vulkan::DescriptorSet>& descriptor_sets) {
         static std::vector<types::TransformUBO> ubos{
             types::TransformUBO{
                 glm::mat4(1.0f),
@@ -165,8 +165,7 @@ namespace caelus::core {
         };
 
         for (auto& each : descriptor_sets) {
-            auto& buffer = manager::ResourceManager::get_descriptor_buffers(each.details.buffer_id)[each.details.buffer_idx];
-            buffer.write(ubos.data(), ubos.size() * sizeof(types::TransformUBO), context);
+            each.write(ubos.data(), ubos.size() * sizeof(types::TransformUBO), context);
         }
     }
 } // namespace caelus::core

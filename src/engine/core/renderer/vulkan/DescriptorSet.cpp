@@ -45,6 +45,16 @@ namespace caelus::core::vulkan {
         ctx.device_details.device.updateDescriptorSets(write_descriptor_set, nullptr);
     }
 
+    void DescriptorSet::write(const void* data, const usize size, const types::detail::VulkanContext& ctx) {
+        auto& buffer = manager::ResourceManager::get_descriptor_buffers(details.buffer_id)[details.buffer_idx];
+
+        buffer.write(data, size, ctx);
+
+        if (size > buffer.current_size) {
+            update(ctx);
+        }
+    }
+
     void DescriptorSet::update(const types::detail::VulkanContext& ctx) {
         auto& buffer = manager::ResourceManager::get_descriptor_buffers(details.buffer_id)[details.buffer_idx];
 

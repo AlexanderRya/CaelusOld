@@ -14,7 +14,7 @@ namespace caelus::core {
         u32 image_index{};
 
         void record_buffers();
-        void update_sets(const std::vector<vulkan::DescriptorSet>& descriptor_sets);
+        void update_sets(std::vector<vulkan::DescriptorSet>& descriptor_sets);
     public:
         types::detail::VulkanContext context;
 
