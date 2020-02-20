@@ -21,6 +21,10 @@
 #include "engine/core/components/buffers/DescriptorBuffer.hpp"
 #include "engine/core/components/manager/PipelineLayoutManager.hpp"
 
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 namespace caelus::core {
     void Renderer::init(const Window& window) {
         context.instance = vulkan::get_instance();
@@ -155,12 +159,14 @@ namespace caelus::core {
 
     void Renderer::update_sets(const std::vector<vulkan::DescriptorSet>& descriptor_sets) {
         static std::vector<types::TransformUBO> ubos{
-            types::TransformUBO{ glm::mat4(1.0f), glm::mat4(1.0f) }
+            types::TransformUBO{
+                glm::mat4(1.0f),
+                glm::translate(glm::mat4(1.0f), { 1.0f, 0.0f, 0.0f }) }
         };
 
         for (auto& each : descriptor_sets) {
             auto& buffer = manager::ResourceManager::get_descriptor_buffers(each.details.buffer_id)[each.details.buffer_idx];
-            buffer.write(ubos.data(), ubos.size(), context);
+            buffer.write(ubos.data(), ubos.size() * sizeof(types::TransformUBO), context);
         }
     }
 } // namespace caelus::core
