@@ -1,8 +1,7 @@
-#ifndef CAELUS_VULKANCONTEXT_HPP
-#define CAELUS_VULKANCONTEXT_HPP
+#ifndef CAELUS_CONTEXT_HPP
+#define CAELUS_CONTEXT_HPP
 
 #include "engine/core/details/Details.hpp"
-#include "engine/core/Window.hpp"
 #include "vulkan/vulkan.hpp"
 
 namespace caelus::core::types::detail {
@@ -23,6 +22,14 @@ namespace caelus::core::types::detail {
         std::vector<vk::Semaphore> image_available;
         std::vector<vk::Semaphore> render_finished;
     };
-} // caelus::core::types::detail
+} // namespace caelus::core::types::detail
+
+namespace caelus::core {
+    class Window;
+} // namespace caelus::core
+
+namespace caelus::core::vulkan {
+    [[nodiscard]] types::detail::VulkanContext make_vulkan_context(const Window&);
+} // namespace caelus::core::vulkan
 
 #endif //CAELUS_VULKANCONTEXT_HPP

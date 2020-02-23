@@ -1,171 +1,100 @@
-#include "GLFW/glfw3.h"
-#include "engine/core/Window.hpp"
-#include "engine/core/Constants.hpp"
-#include "engine/core/info/Info.hpp"
-#include "engine/core/components/Mesh.hpp"
-#include "engine/core/details/Details.hpp"
+#include "engine/core/vulkan/VulkanContext.hpp"
 #include "engine/core/renderer/Renderer.hpp"
-#include "engine/core/renderer/vulkan/Fence.hpp"
-#include "engine/core/renderer/vulkan/Device.hpp"
-#include "engine/core/renderer/vulkan/Instance.hpp"
-#include "engine/core/renderer/vulkan/Pipeline.hpp"
-#include "engine/core/renderer/vulkan/Swapchain.hpp"
-#include "engine/core/renderer/vulkan/Semaphore.hpp"
-#include "engine/core/renderer/vulkan/RenderPass.hpp"
-#include "engine/core/renderer/vulkan/Framebuffer.hpp"
-#include "engine/core/renderer/vulkan/CommandPool.hpp"
-#include "engine/core/renderer/vulkan/CommandBuffer.hpp"
-#include "engine/core/renderer/vulkan/DescriptorSet.hpp"
-#include "engine/core/renderer/vulkan/DescriptorPool.hpp"
-#include "engine/core/components/manager/ResourceManager.hpp"
-#include "engine/core/components/buffers/DescriptorBuffer.hpp"
-#include "engine/core/components/manager/PipelineLayoutManager.hpp"
+#include "engine/core/components/Scene.hpp"
+#include "engine/core/components/Mesh.hpp"
+#include "engine/core/vulkan/Fence.hpp"
+#include "engine/core/Constants.hpp"
 
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include "glm/glm.hpp"
+#include "glm/gtc/type_ptr.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 
 namespace caelus::core {
-    void Renderer::init(const Window& window) {
-        context.instance = vulkan::get_instance();
-#if defined(CAELUS_DEBUG)
-        context.validation = vulkan::install_validation_layers(context);
-#endif
-        context.surface = window.create_surface(context);
-        context.device_details = vulkan::get_device_details(context);
-        context.swapchain_details = vulkan::get_swapchain_details(window, context);
-        context.command_pool = vulkan::make_command_pool(context);
-        context.transient_pool = vulkan::make_transient_pool(context);
-        context.command_buffers = vulkan::make_command_buffer(context);
-        context.descriptor_pool = vulkan::make_descriptor_pool(context);
-        context.render_passes.emplace_back(vulkan::make_default_render_pass(context));
-        context.framebuffers.emplace_back(vulkan::get_framebuffers(0, window, context));
-        // Synchronization
-        context.frames_in_flight.resize(constants::max_frames_in_flight);
-        context.image_available = vulkan::make_semaphores(constants::max_frames_in_flight, context);
-        context.render_finished = vulkan::make_semaphores(constants::max_frames_in_flight, context);
+    void Renderer::acquire_frame() {
+        image_index =
+            ctx.device_details.device.acquireNextImageKHR(
+                ctx.swapchain_details.swapchain, -1, ctx.image_available[current_frame], nullptr).value;
+
+        if (!ctx.frames_in_flight[current_frame]) {
+            ctx.frames_in_flight[current_frame] = vulkan::make_fence(ctx);
+        }
+
+        ctx.device_details.device.waitForFences(ctx.frames_in_flight[current_frame], true, -1);
     }
 
     void Renderer::draw() {
-        auto res = context.device_details.device.acquireNextImageKHR(
-            context.swapchain_details.swapchain,
-            -1,
-            context.image_available[current_frame],
-            nullptr,
-            &image_index);
-
-        if (res == vk::Result::eErrorOutOfDateKHR) {
-            Window::resized = true;
-        }
-
-        if (!context.frames_in_flight[current_frame]) {
-            context.frames_in_flight[current_frame] = vulkan::make_fence(context);
-        }
-
-        context.device_details.device.waitForFences(context.frames_in_flight[current_frame], true, -1);
-
-        record_buffers();
-
-        std::array<vk::PipelineStageFlags, 1> wait_stages{ vk::PipelineStageFlagBits::eColorAttachmentOutput };
-
+        vk::PipelineStageFlags wait_mask{ vk::PipelineStageFlagBits::eColorAttachmentOutput };
         vk::SubmitInfo submit_info{}; {
-            submit_info.pWaitDstStageMask = wait_stages.data();
             submit_info.commandBufferCount = 1;
-            submit_info.pCommandBuffers = &context.command_buffers[image_index];
+            submit_info.pCommandBuffers = &ctx.command_buffers[image_index];
+            submit_info.pWaitDstStageMask = &wait_mask;
             submit_info.waitSemaphoreCount = 1;
-            submit_info.pWaitSemaphores = &context.image_available[current_frame];
+            submit_info.pWaitSemaphores = &ctx.image_available[current_frame];
             submit_info.signalSemaphoreCount = 1;
-            submit_info.pSignalSemaphores = &context.render_finished[current_frame];
+            submit_info.pSignalSemaphores = &ctx.render_finished[current_frame];
         }
 
-        context.device_details.device.resetFences(context.frames_in_flight[current_frame]);
-        context.device_details.queue.submit(submit_info, context.frames_in_flight[current_frame]);
+        ctx.device_details.device.resetFences(ctx.frames_in_flight[current_frame]);
+        ctx.device_details.queue.submit(submit_info, ctx.frames_in_flight[current_frame]);
 
         vk::PresentInfoKHR present_info{}; {
-            present_info.swapchainCount = 1;
-            present_info.pSwapchains = &context.swapchain_details.swapchain;
             present_info.waitSemaphoreCount = 1;
-            present_info.pWaitSemaphores = &context.render_finished[current_frame];
+            present_info.pWaitSemaphores = &ctx.render_finished[current_frame];
+            present_info.swapchainCount = 1;
+            present_info.pSwapchains = &ctx.swapchain_details.swapchain;
             present_info.pImageIndices = &image_index;
         }
 
-        context.device_details.queue.presentKHR(present_info);
+        ctx.device_details.queue.presentKHR(present_info);
 
         current_frame = (current_frame + 1) % constants::max_frames_in_flight;
     }
 
-    void Renderer::record_buffers() {
+    void Renderer::build(const components::Scene& scene) {
         vk::CommandBufferBeginInfo begin_info{}; {
-            begin_info.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
+            begin_info.flags |= vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
         }
 
-        context.command_buffers[image_index].begin(begin_info);
+        ctx.command_buffers[image_index].begin(begin_info);
 
         vk::ClearValue clear_value{}; {
-            clear_value.color = vk::ClearColorValue{ std::array<float, 4>{ 0.0f, 0.0f, 0.0f, 0.0f } };
+            clear_value.color = vk::ClearColorValue{ std::array{ 0.0f, 0.0f, 0.0f, 0.0f } };
         }
 
         vk::RenderPassBeginInfo render_pass_begin_info{}; {
-            render_pass_begin_info.renderPass = context.render_passes[0];
-            render_pass_begin_info.framebuffer = context.framebuffers[0][image_index];
-            render_pass_begin_info.pClearValues = &clear_value;
+            render_pass_begin_info.renderArea.extent = ctx.swapchain_details.extent;
+            render_pass_begin_info.framebuffer = ctx.framebuffers[0][image_index];
+            render_pass_begin_info.renderPass = ctx.render_passes[0];
             render_pass_begin_info.clearValueCount = 1;
-            render_pass_begin_info.renderArea.extent = context.swapchain_details.extent;
+            render_pass_begin_info.pClearValues = &clear_value;
         }
-        
-        context.command_buffers[image_index].beginRenderPass(render_pass_begin_info, vk::SubpassContents::eInline);
 
         vk::Viewport viewport{}; {
+            viewport.width = ctx.swapchain_details.extent.width;
+            viewport.height = ctx.swapchain_details.extent.height;
             viewport.x = 0;
             viewport.y = 0;
             viewport.minDepth = 0.0f;
             viewport.maxDepth = 1.0f;
-            viewport.width = context.swapchain_details.extent.width;
-            viewport.height = context.swapchain_details.extent.height;
         }
 
         vk::Rect2D scissor{}; {
-            scissor.extent = context.swapchain_details.extent;
+            scissor.extent = ctx.swapchain_details.extent;
             scissor.offset = { { 0, 0 } };
         }
 
-        context.command_buffers[image_index].setViewport(0, viewport);
-        context.command_buffers[image_index].setScissor(0, scissor);
+        ctx.command_buffers[image_index].setViewport(0, viewport);
+        ctx.command_buffers[image_index].setScissor(0, scissor);
 
-        for (const auto& mesh : manager::ResourceManager::get_meshes()) {
-            auto& descriptor_set = manager::ResourceManager::get_descriptor_sets(mesh.descriptor_set_id);
-            auto& layout = manager::PipelineLayoutManager::get_layout(mesh.pipeline_layout_id);
+        ctx.command_buffers[image_index].beginRenderPass(render_pass_begin_info, vk::SubpassContents::eInline);
 
-            update_sets(descriptor_set);
-
-            context.command_buffers[image_index].bindPipeline(
-                vk::PipelineBindPoint::eGraphics,
-                manager::ResourceManager::get_pipeline(mesh.pipeline_id).pipeline);
-
-            context.command_buffers[image_index].bindVertexBuffers(0, mesh.vertex_buffer.buffer, 0ul);
-            context.command_buffers[image_index].bindVertexBuffers(1, mesh.instance_buffer.buffer, 0ul);
-            context.command_buffers[image_index].bindDescriptorSets(
-                vk::PipelineBindPoint::eGraphics,
-                layout.pipeline_layout,
-                0,
-                descriptor_set[current_frame].details.descriptor_set,
-                nullptr);
-            context.command_buffers[image_index].draw(mesh.vertices.size(), mesh.instances.size(), 0, 0);
+        for (const auto& mesh : scene.get_meshes()) {
+            ctx.command_buffers[image_index].bindPipeline(vk::PipelineBindPoint::eGraphics, mesh.pipeline);
+            ctx.command_buffers[image_index].bindVertexBuffers(0, mesh.vertex_buffer, 0ul);
+            ctx.command_buffers[image_index].draw(mesh.vertex_count, 1, 0, 0);
         }
 
-        context.command_buffers[image_index].endRenderPass();
-        context.command_buffers[image_index].end();
-    }
-
-    void Renderer::update_sets(std::vector<vulkan::DescriptorSet>& descriptor_sets) {
-        static std::vector<types::TransformUBO> ubos{
-            types::TransformUBO{
-                glm::mat4(1.0f),
-                glm::translate(glm::mat4(1.0f), { 1.0f, 0.0f, 0.0f }) }
-        };
-
-        for (auto& each : descriptor_sets) {
-            each.write(ubos.data(), ubos.size() * sizeof(types::TransformUBO), context);
-        }
+        ctx.command_buffers[image_index].endRenderPass();
+        ctx.command_buffers[image_index].end();
     }
 } // namespace caelus::core

@@ -1,5 +1,5 @@
-#include "engine/core/renderer/vulkan/Fence.hpp"
-#include "engine/core/details/VulkanContext.hpp"
+#include "engine/core/vulkan/Fence.hpp"
+#include "engine/core/vulkan/VulkanContext.hpp"
 #include "vulkan/vulkan.hpp"
 
 namespace caelus::core::vulkan {

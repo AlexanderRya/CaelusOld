@@ -1,8 +1,7 @@
 #include "vulkan/vulkan.hpp"
 #include "engine/logger/Logger.hpp"
-#include "engine/core/renderer/Renderer.hpp"
-#include "engine/core/details/VulkanContext.hpp"
-#include "engine/core/renderer/vulkan/Device.hpp"
+#include "engine/core/vulkan/VulkanContext.hpp"
+#include "engine/core/vulkan/Device.hpp"
 
 namespace caelus::core::vulkan {
     static inline vk::PhysicalDevice get_physical_device(const vk::Instance& instance) {

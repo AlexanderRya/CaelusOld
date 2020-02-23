@@ -1,7 +1,8 @@
-#include "engine/core/renderer/vulkan/Device.hpp"
-#include "engine/core/details/VulkanContext.hpp"
+#include "engine/core/vulkan/VulkanContext.hpp"
+#include "engine/core/vulkan/Device.hpp"
 #include "engine/core/util/Util.hpp"
 #include "vulkan/vulkan.hpp"
+
 
 namespace caelus::core::util {
     vk::Buffer make_buffer(const usize size, const vk::BufferUsageFlags& usage, const types::detail::VulkanContext& ctx) {
@@ -67,5 +68,13 @@ namespace caelus::core::util {
         ctx.device_details.queue.waitIdle();
 
         ctx.device_details.device.freeCommandBuffers(ctx.transient_pool, temp_command_buffer);
+    }
+
+    std::vector<types::Vertex> generate_triangle_geometry() {
+        return { {
+            { { 0.0f, 0.5f, 0.0f }, { 0.0f, 0.0f } },
+            { { 0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f } },
+            { { -0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f } }
+        } };
     }
 } // namespace caelus::core::util

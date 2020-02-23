@@ -1,5 +1,5 @@
-#include "engine/core/renderer/vulkan/CommandPool.hpp"
-#include "engine/core/details/VulkanContext.hpp"
+#include "engine/core/vulkan/CommandPool.hpp"
+#include "engine/core/vulkan/VulkanContext.hpp"
 #include "engine/logger/Logger.hpp"
 #include "vulkan/vulkan.hpp"
 

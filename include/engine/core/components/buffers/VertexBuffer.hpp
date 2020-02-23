@@ -1,6 +1,7 @@
 #ifndef CAELUS_VERTEXBUFFER_HPP
 #define CAELUS_VERTEXBUFFER_HPP
 
+#include "engine/core/Types.hpp"
 #include "vulkan/vulkan.hpp"
 #include <vector>
 
@@ -17,10 +18,12 @@ namespace caelus::core::components::buffers {
         vk::Buffer buffer;
         vk::DeviceMemory memory;
 
-        VertexBuffer() = default;
+        explicit VertexBuffer(const types::detail::VulkanContext& ctx) : ctx(ctx) {}
 
-        void allocate(const std::vector<types::Vertex>&, const types::detail::VulkanContext&);
-        void deallocate(const types::detail::VulkanContext&);
+        void allocate(std::vector<types::Vertex>&&);
+        void deallocate();
+    private:
+        const types::detail::VulkanContext& ctx;
     };
 } // namespace caelus::core::components::buffers
 

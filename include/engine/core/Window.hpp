@@ -34,8 +34,6 @@ namespace caelus::core {
         void poll_events() const;
         void close() const;
         [[nodiscard]] bool should_close() const;
-
-        [[nodiscard]] GLFWwindow* handle() const;
     };
 } // namespace caelus::core
 

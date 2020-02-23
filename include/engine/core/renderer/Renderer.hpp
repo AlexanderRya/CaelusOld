@@ -1,27 +1,29 @@
 #ifndef CAELUS_RENDERER_HPP
 #define CAELUS_RENDERER_HPP
 
-#include "engine/core/details/VulkanContext.hpp"
+#include "engine/core/Types.hpp"
 
 namespace caelus::core {
-    class Window;
-    namespace vulkan {
-        struct DescriptorSet;
-    } // namespace caelus::core::vulkan
+    namespace components {
+        class Scene;
+    } // namespace caelus::core::components
+
+    namespace types::detail {
+        struct VulkanContext;
+    } // namespace caelus::core::types::detail
 
     class Renderer {
         u32 current_frame{};
         u32 image_index{};
 
-        void record_buffers();
-        void update_sets(std::vector<vulkan::DescriptorSet>& descriptor_sets);
+        [[maybe_unused]] types::detail::VulkanContext& ctx;
+
     public:
-        types::detail::VulkanContext context;
+        explicit Renderer(types::detail::VulkanContext& ctx) : ctx(ctx) {}
 
-        Renderer() = default;
-
-        void init(const Window&);
+        void acquire_frame();
         void draw();
+        void build(const components::Scene&);
     };
 } // namespace caelus::core
 

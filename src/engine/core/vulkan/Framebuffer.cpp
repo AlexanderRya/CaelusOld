@@ -1,5 +1,5 @@
-#include "engine/core/renderer/vulkan/Framebuffer.hpp"
-#include "engine/core/details/VulkanContext.hpp"
+#include "engine/core/vulkan/Framebuffer.hpp"
+#include "engine/core/vulkan/VulkanContext.hpp"
 #include "engine/logger/Logger.hpp"
 #include "engine/core/Window.hpp"
 #include "vulkan/vulkan.hpp"

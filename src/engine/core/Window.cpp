@@ -1,4 +1,4 @@
-#include "engine/core/details/VulkanContext.hpp"
+#include "engine/core/vulkan/VulkanContext.hpp"
 #include "engine/core/Callbacks.hpp"
 #include "engine/logger/Logger.hpp"
 #include "engine/core/Window.hpp"
@@ -40,10 +40,6 @@ namespace caelus::core {
             reinterpret_cast<VkSurfaceKHR*>(&surface));
 
         return surface;
-    }
-
-    GLFWwindow* Window::handle() const {
-        return window;
     }
 
     void Window::poll_events() const {

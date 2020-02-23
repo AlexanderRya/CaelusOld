@@ -4,6 +4,7 @@
 #include "engine/core/Callbacks.hpp"
 #include "fmt/format.h"
 
+#include <iostream>
 #include <string>
 
 namespace caelus::logger {

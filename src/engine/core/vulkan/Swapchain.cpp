@@ -1,6 +1,7 @@
+#include "engine/core/vulkan/VulkanContext.hpp"
+#include "engine/core/vulkan/Swapchain.hpp"
 #include "engine/logger/Logger.hpp"
-#include "engine/core/details/VulkanContext.hpp"
-#include "engine/core/renderer/vulkan/Swapchain.hpp"
+#include "engine/core/Window.hpp"
 #include "vulkan/vulkan.hpp"
 
 #include <iostream>

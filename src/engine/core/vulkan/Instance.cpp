@@ -1,5 +1,5 @@
-#include "engine/core/renderer/vulkan/Instance.hpp"
-#include "engine/core/details/VulkanContext.hpp"
+#include "engine/core/vulkan/Instance.hpp"
+#include "engine/core/vulkan/VulkanContext.hpp"
 #include "engine/core/Callbacks.hpp"
 #include "GLFW/glfw3.h"
 

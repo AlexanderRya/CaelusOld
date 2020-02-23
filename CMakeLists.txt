@@ -24,66 +24,61 @@ set(CAELUS_HEADERS
         include/engine/core/renderer/Renderer.hpp
         include/engine/core/Window.hpp
         include/engine/core/Types.hpp
-        include/engine/core/details/VulkanContext.hpp
-        include/engine/core/renderer/vulkan/Device.hpp
+        include/engine/core/vulkan/Device.hpp
         include/engine/core/Callbacks.hpp
         include/engine/core/details/Details.hpp
-        include/engine/core/renderer/vulkan/Instance.hpp
-        include/engine/core/renderer/vulkan/Swapchain.hpp
+        include/engine/core/vulkan/Instance.hpp
+        include/engine/core/vulkan/Swapchain.hpp
         include/engine/logger/Logger.hpp
         include/engine/core/Application.hpp
-        include/engine/core/renderer/vulkan/CommandPool.hpp
-        include/engine/core/renderer/vulkan/DescriptorPool.hpp
-        include/engine/core/renderer/vulkan/RenderPass.hpp
+        include/engine/core/vulkan/CommandPool.hpp
+        include/engine/core/vulkan/DescriptorPool.hpp
+        include/engine/core/vulkan/RenderPass.hpp
         include/engine/core/Constants.hpp
-        include/engine/core/renderer/vulkan/Framebuffer.hpp
-        include/engine/core/info/Info.hpp
-        include/engine/core/renderer/vulkan/Pipeline.hpp
+        include/engine/core/vulkan/Framebuffer.hpp
+        include/engine/core/vulkan/Pipeline.hpp
         include/engine/core/util/Util.hpp
         include/engine/core/components/Mesh.hpp
-        include/engine/core/components/manager/ResourceManager.hpp
         include/engine/core/components/Texture.hpp
-        include/engine/core/renderer/vulkan/CommandBuffer.hpp
-        include/engine/core/renderer/vulkan/Fence.hpp
-        include/engine/core/renderer/vulkan/Semaphore.hpp
+        include/engine/core/vulkan/CommandBuffer.hpp
+        include/engine/core/vulkan/Fence.hpp
+        include/engine/core/vulkan/Semaphore.hpp
         include/engine/core/components/buffers/VertexBuffer.hpp
-        include/engine/core/components/buffers/InstanceBuffer.hpp
-        include/engine/core/components/manager/PipelineLayoutManager.hpp
         include/engine/core/components/Camera.hpp
-        include/engine/core/renderer/vulkan/DescriptorSet.hpp
-        include/engine/core/components/buffers/DescriptorBuffer.hpp)
+        include/engine/core/components/managers/SceneManager.hpp
+        include/engine/core/vulkan/VulkanContext.hpp
+        include/engine/core/vulkan/PipelineLayout.hpp
+        include/engine/core/components/Scene.hpp)
 
 set(CAELUS_SOURCES
         src/main.cpp
         src/engine/core/Window.cpp
         src/engine/core/renderer/Renderer.cpp
-        src/engine/core/renderer/vulkan/Device.cpp
-        src/engine/core/renderer/vulkan/Instance.cpp
-        src/engine/core/renderer/vulkan/Swapchain.cpp
+        src/engine/core/vulkan/Device.cpp
+        src/engine/core/vulkan/Instance.cpp
+        src/engine/core/vulkan/Swapchain.cpp
         src/engine/core/Application.cpp
-        src/engine/core/renderer/vulkan/CommandPool.cpp
-        src/engine/core/renderer/vulkan/RenderPass.cpp
-        src/engine/core/renderer/vulkan/Framebuffer.cpp
-        src/engine/core/renderer/vulkan/DescriptorPool.cpp
-        src/engine/core/renderer/vulkan/Pipeline.cpp
-        src/engine/core/info/Info.cpp
+        src/engine/core/vulkan/CommandPool.cpp
+        src/engine/core/vulkan/RenderPass.cpp
+        src/engine/core/vulkan/Framebuffer.cpp
+        src/engine/core/vulkan/DescriptorPool.cpp
+        src/engine/core/vulkan/Pipeline.cpp
         src/engine/core/Callbacks.cpp
-        src/engine/core/components/manager/ResourceManager.cpp
-        src/engine/core/renderer/vulkan/CommandBuffer.cpp
-        src/engine/core/renderer/vulkan/Fence.cpp
-        src/engine/core/renderer/vulkan/Semaphore.cpp
+        src/engine/core/vulkan/CommandBuffer.cpp
+        src/engine/core/vulkan/Fence.cpp
+        src/engine/core/vulkan/Semaphore.cpp
         src/engine/core/components/buffers/VertexBuffer.cpp
-        src/engine/core/components/buffers/InstanceBuffer.cpp
-        src/engine/core/components/manager/PipelineLayoutManager.cpp
         src/engine/core/util/Util.cpp
-        src/engine/core/renderer/vulkan/DescriptorSet.cpp
-        src/engine/core/components/buffers/DescriptorBuffer.cpp src/engine/core/components/Camera.cpp)
+        src/engine/core/components/Camera.cpp
+        src/engine/core/vulkan/VulkanContext.cpp
+        src/engine/core/components/manager/SceneManager.cpp
+        src/engine/core/components/Scene.cpp)
 
 add_executable(Caelus
         ${CAELUS_HEADERS}
         ${CAELUS_SOURCES})
 
-target_compile_options(Caelus PRIVATE -std=c++20 -O3 -Wall -Wextra -Werror -pedantic)
+target_compile_options(Caelus PRIVATE -std=c++20 -O3 -Wall -Wextra -Werror -pedantic -std=libc++)
 
 if (WIN32)
     target_compile_definitions(Caelus PRIVATE _CRT_SECURE_NO_WARNINGS)
@@ -108,13 +103,8 @@ if (UNIX)
             COMPILE_OPTIONS -Wno-everything)
 endif()
 
-add_custom_command(
-        TARGET Caelus
-        COMMAND echo Compiling shaders &&
-        ../compile_shaders.sh)
-
 if (WIN32)
     target_link_libraries(Caelus ${Vulkan_LIBRARIES} glfw fmt)
 elseif (UNIX)
-    target_link_libraries(Caelus ${Vulkan_LIBRARIES} glfw fmt pthread)
+    target_link_libraries(Caelus ${Vulkan_LIBRARIES} glfw fmt pthread c++ c++abi)
 endif()

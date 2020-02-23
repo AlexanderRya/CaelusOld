@@ -1,6 +1,5 @@
 #include "engine/core/components/buffers/VertexBuffer.hpp"
-#include "engine/core/renderer/vulkan/Device.hpp"
-#include "engine/core/details/VulkanContext.hpp"
+#include "engine/core/vulkan/VulkanContext.hpp"
 #include "engine/core/util/Util.hpp"
 #include "engine/logger/Logger.hpp"
 #include "engine/core/Types.hpp"
@@ -8,7 +7,7 @@
 #include <cstring>
 
 namespace caelus::core::components::buffers {
-    void VertexBuffer::allocate(const std::vector<types::Vertex>& vertices, const types::detail::VulkanContext& ctx) {
+    void VertexBuffer::allocate(std::vector<types::Vertex>&& vertices) {
         vk::Buffer temp_buffer{};
         vk::DeviceMemory temp_memory{};
 
@@ -34,10 +33,7 @@ namespace caelus::core::components::buffers {
                 vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eVertexBuffer,
                 ctx);
 
-            memory = util::allocate_memory(
-                buffer,
-                vk::MemoryPropertyFlagBits::eDeviceLocal,
-                ctx);
+            memory = util::allocate_memory(buffer, vk::MemoryPropertyFlagBits::eDeviceLocal, ctx);
         }
 
         /* Copy to device local */ {
@@ -50,7 +46,7 @@ namespace caelus::core::components::buffers {
         logger::info("Successfully allocated vertex buffer with size (in bytes): ", vertices.size() * sizeof(types::Vertex));
     }
 
-    void VertexBuffer::deallocate(const types::detail::VulkanContext& ctx) {
+    void VertexBuffer::deallocate() {
         ctx.device_details.device.freeMemory(memory);
         ctx.device_details.device.destroyBuffer(buffer);
     }

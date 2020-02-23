@@ -1,7 +1,9 @@
 #ifndef CAELUS_TYPES_HPP
 #define CAELUS_TYPES_HPP
 
-#include "glm/glm.hpp"
+#include "glm/mat4x4.hpp"
+#include "glm/vec3.hpp"
+#include "glm/vec2.hpp"
 
 using i8 = signed char;
 using i16 = signed short;
@@ -25,7 +27,7 @@ namespace caelus::core::types {
         glm::vec2 tx_coords;
     };
 
-    struct TransformUBO {
+    struct CameraData {
         glm::mat4 pv_mat;
         glm::mat4 model;
     };

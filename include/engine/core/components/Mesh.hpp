@@ -1,22 +1,18 @@
 #ifndef CAELUS_MESH_HPP
 #define CAELUS_MESH_HPP
 
-#include "engine/core/components/buffers/InstanceBuffer.hpp"
 #include "engine/core/components/buffers/VertexBuffer.hpp"
 #include "engine/core/Types.hpp"
 #include <vector>
 
 namespace caelus::core::components {
     struct Mesh {
-        std::vector<types::Vertex> vertices;
-        std::vector<glm::mat4> instances;
+        vk::Pipeline pipeline;
 
-        u32 pipeline_id;
-        u32 pipeline_layout_id;
-        u32 descriptor_set_id;
+        vk::Buffer vertex_buffer;
+        vk::DeviceMemory vertex_memory;
 
-        buffers::VertexBuffer vertex_buffer;
-        buffers::InstanceBuffer instance_buffer;
+        usize vertex_count;
         //!TODO: Textures.
     };
 } // namespace caelus::core::components
