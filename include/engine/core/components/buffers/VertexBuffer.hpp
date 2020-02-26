@@ -5,12 +5,21 @@
 #include "vulkan/vulkan.hpp"
 #include <vector>
 
-namespace caelus::core::types::detail {
-    struct VulkanContext;
-} // namespace caelus::core::types::detail
-
 namespace caelus::core::types {
     struct Vertex;
+} // namespace caelus::core::types
+
+namespace caelus::core::types {
+    namespace detail {
+        struct VulkanContext;
+    } // namespace caelus::core::types::detail
+
+    namespace info {
+        struct VertexBufferCreateInfo {
+            std::vector<types::Vertex> vertices;
+            const types::detail::VulkanContext* ctx;
+        };
+    } // namespace caelus::core::types::info
 } // namespace caelus::core::types
 
 namespace caelus::core::components::buffers {
@@ -18,12 +27,11 @@ namespace caelus::core::components::buffers {
         vk::Buffer buffer;
         vk::DeviceMemory memory;
 
-        explicit VertexBuffer(const types::detail::VulkanContext& ctx) : ctx(ctx) {}
+        explicit VertexBuffer(const types::info::VertexBufferCreateInfo&);
 
-        void allocate(std::vector<types::Vertex>&&);
         void deallocate();
     private:
-        const types::detail::VulkanContext& ctx;
+        const types::detail::VulkanContext* ctx;
     };
 } // namespace caelus::core::components::buffers
 

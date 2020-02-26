@@ -1,18 +1,17 @@
 #ifndef CAELUS_MESH_HPP
 #define CAELUS_MESH_HPP
 
-#include "engine/core/components/buffers/VertexBuffer.hpp"
 #include "engine/core/Types.hpp"
+#include "vulkan/vulkan.hpp"
 #include <vector>
 
 namespace caelus::core::components {
     struct Mesh {
-        vk::Pipeline pipeline;
+        usize pipeline_idx{};
+        usize vertex_buffer_idx{};
 
-        vk::Buffer vertex_buffer;
-        vk::DeviceMemory vertex_memory;
-
-        usize vertex_count;
+        usize vertex_count{};
+        usize instances_count{};
         //!TODO: Textures.
     };
 } // namespace caelus::core::components

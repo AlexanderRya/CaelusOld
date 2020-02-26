@@ -1,6 +1,8 @@
+#include "engine/core/components/buffers/VertexBuffer.hpp"
 #include "engine/core/vulkan/VulkanContext.hpp"
 #include "engine/core/renderer/Renderer.hpp"
 #include "engine/core/components/Scene.hpp"
+#include "engine/core/vulkan/Pipeline.hpp"
 #include "engine/core/components/Mesh.hpp"
 #include "engine/core/vulkan/Fence.hpp"
 #include "engine/core/Constants.hpp"
@@ -10,16 +12,20 @@
 #include "glm/gtc/matrix_transform.hpp"
 
 namespace caelus::core {
+    Renderer::Renderer(const types::detail::VulkanContext& ctx)
+        : ctx(ctx) {
+        frames_in_flight.resize(constants::frames_in_flight);
+    }
+
     void Renderer::acquire_frame() {
         image_index =
-            ctx.device_details.device.acquireNextImageKHR(
-                ctx.swapchain_details.swapchain, -1, ctx.image_available[current_frame], nullptr).value;
+            ctx.device_details.device.acquireNextImageKHR(ctx.swapchain_details.swapchain, -1, ctx.image_available[current_frame], nullptr, ctx.dispatcher).value;
 
-        if (!ctx.frames_in_flight[current_frame]) {
-            ctx.frames_in_flight[current_frame] = vulkan::make_fence(ctx);
+        if (!frames_in_flight[current_frame]) {
+            frames_in_flight[current_frame] = vulkan::make_fence(ctx);
         }
 
-        ctx.device_details.device.waitForFences(ctx.frames_in_flight[current_frame], true, -1);
+        ctx.device_details.device.waitForFences(frames_in_flight[current_frame], true, -1, ctx.dispatcher);
     }
 
     void Renderer::draw() {
@@ -34,8 +40,8 @@ namespace caelus::core {
             submit_info.pSignalSemaphores = &ctx.render_finished[current_frame];
         }
 
-        ctx.device_details.device.resetFences(ctx.frames_in_flight[current_frame]);
-        ctx.device_details.queue.submit(submit_info, ctx.frames_in_flight[current_frame]);
+        ctx.device_details.device.resetFences(frames_in_flight[current_frame], ctx.dispatcher);
+        ctx.device_details.queue.submit(submit_info, frames_in_flight[current_frame], ctx.dispatcher);
 
         vk::PresentInfoKHR present_info{}; {
             present_info.waitSemaphoreCount = 1;
@@ -45,9 +51,9 @@ namespace caelus::core {
             present_info.pImageIndices = &image_index;
         }
 
-        ctx.device_details.queue.presentKHR(present_info);
+        ctx.device_details.queue.presentKHR(present_info, ctx.dispatcher);
 
-        current_frame = (current_frame + 1) % constants::max_frames_in_flight;
+        current_frame = (current_frame + 1) % constants::frames_in_flight;
     }
 
     void Renderer::build(const components::Scene& scene) {
@@ -55,7 +61,7 @@ namespace caelus::core {
             begin_info.flags |= vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
         }
 
-        ctx.command_buffers[image_index].begin(begin_info);
+        ctx.command_buffers[image_index].begin(begin_info, ctx.dispatcher);
 
         vk::ClearValue clear_value{}; {
             clear_value.color = vk::ClearColorValue{ std::array{ 0.0f, 0.0f, 0.0f, 0.0f } };
@@ -83,18 +89,18 @@ namespace caelus::core {
             scissor.offset = { { 0, 0 } };
         }
 
-        ctx.command_buffers[image_index].setViewport(0, viewport);
-        ctx.command_buffers[image_index].setScissor(0, scissor);
+        ctx.command_buffers[image_index].setViewport(0, viewport, ctx.dispatcher);
+        ctx.command_buffers[image_index].setScissor(0, scissor, ctx.dispatcher);
 
-        ctx.command_buffers[image_index].beginRenderPass(render_pass_begin_info, vk::SubpassContents::eInline);
+        ctx.command_buffers[image_index].beginRenderPass(render_pass_begin_info, vk::SubpassContents::eInline, ctx.dispatcher);
 
-        for (const auto& mesh : scene.get_meshes()) {
-            ctx.command_buffers[image_index].bindPipeline(vk::PipelineBindPoint::eGraphics, mesh.pipeline);
-            ctx.command_buffers[image_index].bindVertexBuffers(0, mesh.vertex_buffer, 0ul);
-            ctx.command_buffers[image_index].draw(mesh.vertex_count, 1, 0, 0);
+        for (const auto& mesh : scene.meshes) {
+            ctx.command_buffers[image_index].bindPipeline(vk::PipelineBindPoint::eGraphics, scene.pipelines[mesh.pipeline_idx].pipeline, ctx.dispatcher);
+            ctx.command_buffers[image_index].bindVertexBuffers(0, scene.vertex_buffers[mesh.vertex_buffer_idx].buffer, 0ul, ctx.dispatcher);
+            ctx.command_buffers[image_index].draw(mesh.vertex_count, mesh.instances_count, 0, 0, ctx.dispatcher);
         }
 
-        ctx.command_buffers[image_index].endRenderPass();
-        ctx.command_buffers[image_index].end();
+        ctx.command_buffers[image_index].endRenderPass(ctx.dispatcher);
+        ctx.command_buffers[image_index].end(ctx.dispatcher);
     }
 } // namespace caelus::core

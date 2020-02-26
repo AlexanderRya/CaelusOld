@@ -1,13 +1,12 @@
 #include "engine/core/components/managers/SceneManager.hpp"
+#include "engine/core/components/buffers/VertexBuffer.hpp"
+#include "engine/core/components/Scene.hpp"
+#include "engine/core/vulkan/Pipeline.hpp"
 #include "engine/logger/Logger.hpp"
 
 namespace caelus::core::components::managers {
-    void SceneManager::add_scene(const u64 id, const Scene& info) {
-        if (scenes.contains(id)) {
-            logger::warning("Scene with id: ", id, " already exists, overwriting.");
-        }
-
-        scenes[id] = info;
+    const Scene& SceneManager::get_scene(const u64 id) const {
+        return scenes.at(id);
     }
 
     void SceneManager::remove_scene(const u64 id) {
@@ -15,10 +14,10 @@ namespace caelus::core::components::managers {
     }
 
     Scene& SceneManager::operator [](const u64 id) {
-        return scenes[id];
-    }
+        if (scenes.contains(id)) {
+            logger::warning("Scene with id: ", id, " already exists, overwriting.");
+        }
 
-    const Scene& SceneManager::operator [](const u64 id) const {
-        return scenes.at(id);
+        return scenes[id];
     }
 } // namespace caelus::core::components::managers

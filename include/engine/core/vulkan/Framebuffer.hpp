@@ -17,7 +17,7 @@ namespace caelus::core {
 } // namespace caelus::core
 
 namespace caelus::core::vulkan {
-    std::vector<vk::Framebuffer> get_framebuffers(const u32, const Window&, const types::detail::VulkanContext&);
+    std::vector<vk::Framebuffer> get_framebuffers(const u32, const types::detail::VulkanContext&);
 } // namespace caelus::core::vulkan
 
 #endif //CAELUS_FRAMEBUFFER_HPP

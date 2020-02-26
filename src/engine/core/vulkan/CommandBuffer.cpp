@@ -12,7 +12,7 @@ namespace caelus::core::vulkan {
             allocate_info.level = vk::CommandBufferLevel::ePrimary;
         }
 
-        auto buffers = ctx.device_details.device.allocateCommandBuffers(allocate_info);
+        auto buffers = ctx.device_details.device.allocateCommandBuffers(allocate_info, ctx.dispatcher);
 
         logger::info("Created ", allocate_info.commandBufferCount, " command buffers for rendering");
 

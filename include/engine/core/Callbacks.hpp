@@ -7,11 +7,8 @@
 #include <iostream>
 
 #include "vulkan/vulkan.hpp"
-#include "fmt/format.h"
 
 namespace caelus::core::callbacks {
-    std::string get_current_timestamp();
-
     [[maybe_unused]] VKAPI_ATTR VkBool32 VKAPI_CALL vulkan_debug_callback(
         VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
         VkDebugUtilsMessageTypeFlagsEXT message_type,

@@ -2,7 +2,6 @@
 #define CAELUS_DEVICE_HPP
 
 #include "engine/core/Types.hpp"
-#include "vulkan/vulkan.hpp"
 
 namespace caelus::core::types::detail {
     struct DeviceDetails;

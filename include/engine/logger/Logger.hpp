@@ -1,8 +1,7 @@
 #ifndef CAELUS_LOGGER_HPP
 #define CAELUS_LOGGER_HPP
 
-#include "engine/core/Callbacks.hpp"
-#include "fmt/format.h"
+#include "engine/core/util/Util.hpp"
 
 #include <iostream>
 #include <string>
@@ -11,27 +10,27 @@ namespace caelus::logger {
 #if !defined(CAELUS_DISABLE_LOGGING)
     template <typename ...Args>
     void info(Args&& ...args) {
-        std::cout << fmt::format(
+        std::cout << core::util::format(
             "[{}] [Logger] [Info]: ",
-            core::callbacks::get_current_timestamp());
+            core::util::get_current_timestamp());
 
         (((std::cout << args), ...), std::cout << "\n");
     }
 
     template <typename ...Args>
     void warning(Args&& ...args) {
-        std::cout << fmt::format(
+        std::cout << core::util::format(
             "[{}] [Logger] [Warning]: ",
-            core::callbacks::get_current_timestamp());
+            core::util::get_current_timestamp());
 
         (((std::cout << args), ...), std::cout << "\n");
     }
 
     template <typename ...Args>
     void error(Args&& ...args) {
-        std::cout << fmt::format(
+        std::cout << core::util::format(
             "[{}] [Logger] [Error]: ",
-            core::callbacks::get_current_timestamp());
+            core::util::get_current_timestamp());
 
         (((std::cout << args), ...), std::cout << "\n");
     }

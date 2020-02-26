@@ -2,9 +2,21 @@
 #include "engine/core/vulkan/Device.hpp"
 #include "engine/core/util/Util.hpp"
 #include "vulkan/vulkan.hpp"
-
+#include <chrono>
+#include <ctime>
 
 namespace caelus::core::util {
+    std::string get_current_timestamp() {
+        namespace ch = std::chrono;
+
+        auto time = ch::duration_cast<ch::seconds>(ch::system_clock::now().time_since_epoch()).count();
+
+        std::string buf(128, '\0');
+        buf.resize(std::strftime(buf.data(), buf.size(), "%Y-%m-%d %X", std::localtime(&time)));
+
+        return buf;
+    }
+
     vk::Buffer make_buffer(const usize size, const vk::BufferUsageFlags& usage, const types::detail::VulkanContext& ctx) {
         vk::BufferCreateInfo buffer_create_info{}; {
             buffer_create_info.size = size;
@@ -14,11 +26,11 @@ namespace caelus::core::util {
             buffer_create_info.sharingMode = vk::SharingMode::eExclusive;
         }
 
-        return ctx.device_details.device.createBuffer(buffer_create_info);
+        return ctx.device_details.device.createBuffer(buffer_create_info, nullptr, ctx.dispatcher);
     }
 
     vk::DeviceMemory allocate_memory(const vk::Buffer& buffer, const vk::MemoryPropertyFlags& flags, const types::detail::VulkanContext& ctx) {
-        const auto memory_requirements = ctx.device_details.device.getBufferMemoryRequirements(buffer);
+        const auto memory_requirements = ctx.device_details.device.getBufferMemoryRequirements(buffer, ctx.dispatcher);
 
         vk::MemoryAllocateInfo memory_allocate_info{}; {
             memory_allocate_info.allocationSize = memory_requirements.size;
@@ -26,9 +38,9 @@ namespace caelus::core::util {
                 ctx, memory_requirements.memoryTypeBits, flags);
         }
 
-        auto memory = ctx.device_details.device.allocateMemory(memory_allocate_info);
+        auto memory = ctx.device_details.device.allocateMemory(memory_allocate_info, nullptr, ctx.dispatcher);
 
-        ctx.device_details.device.bindBufferMemory(buffer, memory, 0);
+        ctx.device_details.device.bindBufferMemory(buffer, memory, 0, ctx.dispatcher);
 
         return memory;
     }
@@ -40,13 +52,13 @@ namespace caelus::core::util {
             command_buffer_allocate_info.commandPool = ctx.transient_pool;
         }
 
-        auto temp_command_buffer = ctx.device_details.device.allocateCommandBuffers(command_buffer_allocate_info);
+        auto temp_command_buffer = ctx.device_details.device.allocateCommandBuffers(command_buffer_allocate_info, ctx.dispatcher);
 
         vk::CommandBufferBeginInfo begin_info{}; {
             begin_info.flags = vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
         }
 
-        temp_command_buffer[0].begin(begin_info);
+        temp_command_buffer[0].begin(begin_info, ctx.dispatcher);
 
         vk::BufferCopy region{}; {
             region.size = size;
@@ -54,20 +66,20 @@ namespace caelus::core::util {
             region.dstOffset = 0;
         }
 
-        temp_command_buffer[0].copyBuffer(src, dst, region);
+        temp_command_buffer[0].copyBuffer(src, dst, region, ctx.dispatcher);
 
-        temp_command_buffer[0].end();
+        temp_command_buffer[0].end(ctx.dispatcher);
 
         vk::SubmitInfo submit_info{}; {
             submit_info.commandBufferCount = 1;
             submit_info.pCommandBuffers = temp_command_buffer.data();
         }
 
-        ctx.device_details.queue.submit(submit_info, nullptr);
+        ctx.device_details.queue.submit(submit_info, nullptr, ctx.dispatcher);
 
-        ctx.device_details.queue.waitIdle();
+        ctx.device_details.queue.waitIdle(ctx.dispatcher);
 
-        ctx.device_details.device.freeCommandBuffers(ctx.transient_pool, temp_command_buffer);
+        ctx.device_details.device.freeCommandBuffers(ctx.transient_pool, temp_command_buffer, ctx.dispatcher);
     }
 
     std::vector<types::Vertex> generate_triangle_geometry() {

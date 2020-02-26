@@ -6,6 +6,7 @@
 
 namespace caelus::core::types::detail {
     struct VulkanContext {
+        vk::DispatchLoaderDynamic dispatcher;
         // Main vulkan data
         vk::Instance instance;
         vk::DebugUtilsMessengerEXT validation;
@@ -18,7 +19,6 @@ namespace caelus::core::types::detail {
         vk::DescriptorPool descriptor_pool;
         std::vector<vk::RenderPass> render_passes;
         std::vector<std::vector<vk::Framebuffer>> framebuffers;
-        std::vector<vk::Fence> frames_in_flight;
         std::vector<vk::Semaphore> image_available;
         std::vector<vk::Semaphore> render_finished;
     };

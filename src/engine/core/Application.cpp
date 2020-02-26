@@ -1,4 +1,4 @@
-#include "engine/core/vulkan/PipelineLayout.hpp"
+#include "engine/core/components/buffers/VertexBuffer.hpp"
 #include "engine/core/vulkan/VulkanContext.hpp"
 #include "engine/core/components/Mesh.hpp"
 #include "engine/core/vulkan/Pipeline.hpp"
@@ -17,63 +17,40 @@ namespace caelus::core {
     void Application::run() {
         Renderer renderer{ context };
 
-        load_layouts();
-        load_pipelines();
-        load_scene();
+        components::Scene scene{}; {
+            types::info::PipelineCreateInfo pipeline_create_info{}; {
+                pipeline_create_info.ctx = &context;
+                pipeline_create_info.vertex_path = "../resources/shaders/test.vert.spv";
+                pipeline_create_info.fragment_path = "../resources/shaders/test.frag.spv";
+                pipeline_create_info.renderpass_index = 0;
+                pipeline_create_info.subpass_index = 0;
+            }
+
+            scene.pipelines.emplace_back() = vulkan::make_generic_mesh_pipeline(pipeline_create_info);
+
+            types::info::VertexBufferCreateInfo buffer_create_info{}; {
+                buffer_create_info.ctx = &context;
+                buffer_create_info.vertices = util::generate_triangle_geometry();
+            }
+
+            scene.vertex_buffers.emplace_back(buffer_create_info);
+
+            scene.meshes.emplace_back(components::Mesh{
+                .pipeline_idx = 0,
+                .vertex_buffer_idx = 0,
+                .vertex_count = 3,
+                .instances_count = 1
+            });
+
+            scene_manager[0] = scene;
+        }
 
         while (!window.should_close()) {
             renderer.acquire_frame();
-            renderer.build(scene_manager[0]);
+            renderer.build(scene_manager.get_scene(0));
             renderer.draw();
+
             window.poll_events();
         }
-    }
-
-    void Application::load_layouts() {
-        layouts.resize(1);
-        /* Default layout */ {
-            vk::PipelineLayoutCreateInfo pipeline_layout_create_info{}; {
-                pipeline_layout_create_info.pushConstantRangeCount = 0;
-                pipeline_layout_create_info.pPushConstantRanges = nullptr;
-                pipeline_layout_create_info.setLayoutCount = 0;
-                pipeline_layout_create_info.pSetLayouts = nullptr;
-            }
-
-            layouts[0].pipeline_layout = context.device_details.device.createPipelineLayout(pipeline_layout_create_info);
-            layouts[0].set_layout = {};
-        }
-    }
-
-    void Application::load_pipelines() {
-        /* Generic pipeline*/ {
-            types::info::PipelineCreateInfo info{}; {
-                info.ctx = &context;
-                info.pipeline_layout = layouts[0].pipeline_layout;
-
-                info.renderpass_index = 0;
-                info.subpass_index = 0;
-
-                info.fragment_path = "../resources/shaders/test.frag.spv";
-                info.vertex_path = "../resources/shaders/test.vert.spv";
-            }
-
-            pipelines.emplace_back(vulkan::make_default_pipeline(info));
-        }
-    }
-
-    void Application::load_scene() {
-        components::Scene scene{};
-
-        vertex_buffers.emplace_back(context).allocate(util::generate_triangle_geometry());
-
-        components::Mesh mesh{}; {
-            mesh.pipeline = pipelines[0];
-            mesh.vertex_buffer = vertex_buffers[0].buffer;
-            mesh.vertex_memory = vertex_buffers[0].memory;
-            mesh.vertex_count = 3;
-        }
-
-        scene.add_mesh(mesh);
-        scene_manager.add_scene(0, scene);
     }
 } // namespace caelus::core

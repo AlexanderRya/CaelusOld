@@ -45,7 +45,7 @@ namespace caelus::core::vulkan {
             render_pass_create_info.pDependencies = &subpass_dependency;
         }
 
-        auto render_pass = ctx.device_details.device.createRenderPass(render_pass_create_info);
+        auto render_pass = ctx.device_details.device.createRenderPass(render_pass_create_info, nullptr, ctx.dispatcher);
 
         logger::info("Default renderpass successfully created, index: ", 0);
 

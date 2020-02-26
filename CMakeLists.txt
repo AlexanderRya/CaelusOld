@@ -4,13 +4,11 @@ project(Caelus)
 find_package(Vulkan REQUIRED)
 
 add_subdirectory(external/glfw)
-add_subdirectory(external/fmt)
 add_subdirectory(external/glm)
 
 include_directories(
         include
         external/glm
-        external/fmt/include
         external/glfw/include
         ${Vulkan_INCLUDE_DIRS})
 
@@ -48,7 +46,8 @@ set(CAELUS_HEADERS
         include/engine/core/components/managers/SceneManager.hpp
         include/engine/core/vulkan/VulkanContext.hpp
         include/engine/core/vulkan/PipelineLayout.hpp
-        include/engine/core/components/Scene.hpp)
+        include/engine/core/components/Scene.hpp
+        include/engine/core/Intrinsics.hpp include/engine/core/components/buffers/DescriptorBuffer.hpp include/engine/core/vulkan/DescriptorSet.hpp)
 
 set(CAELUS_SOURCES
         src/main.cpp
@@ -71,14 +70,13 @@ set(CAELUS_SOURCES
         src/engine/core/util/Util.cpp
         src/engine/core/components/Camera.cpp
         src/engine/core/vulkan/VulkanContext.cpp
-        src/engine/core/components/manager/SceneManager.cpp
-        src/engine/core/components/Scene.cpp)
+        src/engine/core/components/manager/SceneManager.cpp src/engine/core/vulkan/DescriptorSet.cpp)
 
 add_executable(Caelus
         ${CAELUS_HEADERS}
         ${CAELUS_SOURCES})
 
-target_compile_options(Caelus PRIVATE -std=c++20 -O3 -Wall -Wextra -Werror -pedantic -std=libc++)
+target_compile_options(Caelus PRIVATE -std=c++20 -O3 -Wall -Wextra -Werror -Wno-c99-extensions -pedantic -std=libc++)
 
 if (WIN32)
     target_compile_definitions(Caelus PRIVATE _CRT_SECURE_NO_WARNINGS)
@@ -87,24 +85,23 @@ endif()
 if (UNIX)
     if (CMAKE_BUILD_TYPE MATCHES Debug)
         target_compile_definitions(Caelus PRIVATE _GLIBCXX_DEBUG)
+        target_compile_definitions(Caelus PRIVATE _LIBCPP_DEBUG=1)
     endif()
 endif()
 
 if (CMAKE_BUILD_TYPE MATCHES Debug)
     target_compile_definitions(Caelus PRIVATE CAELUS_DEBUG)
-else()
-    target_compile_definitions(Caelus PRIVATE CAELUS_DISABLE_LOGGING)
 endif()
 
 if (UNIX)
     set_target_properties(
-            glfw fmt
+            glfw
             PROPERTIES
             COMPILE_OPTIONS -Wno-everything)
 endif()
 
 if (WIN32)
-    target_link_libraries(Caelus ${Vulkan_LIBRARIES} glfw fmt)
+    target_link_libraries(Caelus glfw fmt)
 elseif (UNIX)
-    target_link_libraries(Caelus ${Vulkan_LIBRARIES} glfw fmt pthread c++ c++abi)
+    target_link_libraries(Caelus glfw fmt pthread c++ c++abi)
 endif()

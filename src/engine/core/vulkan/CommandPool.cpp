@@ -10,7 +10,7 @@ namespace caelus::core::vulkan {
             command_pool_create_info.flags = vk::CommandPoolCreateFlagBits::eResetCommandBuffer;
         }
 
-        auto pool = ctx.device_details.device.createCommandPool(command_pool_create_info);
+        auto pool = ctx.device_details.device.createCommandPool(command_pool_create_info, nullptr, ctx.dispatcher);
 
         logger::info("Command pool successfully created");
 
@@ -25,7 +25,7 @@ namespace caelus::core::vulkan {
                 vk::CommandPoolCreateFlagBits::eTransient;
         }
 
-        auto pool = ctx.device_details.device.createCommandPool(command_pool_create_info);
+        auto pool = ctx.device_details.device.createCommandPool(command_pool_create_info, nullptr, ctx.dispatcher);
 
         logger::info("Transient command pool successfully created");
 

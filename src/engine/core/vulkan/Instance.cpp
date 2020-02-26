@@ -4,11 +4,11 @@
 #include "GLFW/glfw3.h"
 
 namespace caelus::core::vulkan {
-    static inline std::vector<const char*> get_required_extensions() {
+    static inline std::vector<const char*> get_required_extensions(const types::detail::VulkanContext& ctx) {
         u32 count = 0;
 
         auto required_extensions = glfwGetRequiredInstanceExtensions(&count);
-        auto extensions = vk::enumerateInstanceExtensionProperties();
+        auto extensions = vk::enumerateInstanceExtensionProperties(nullptr, {}, ctx.dispatcher);
 
         std::vector<const char*> enabled_extensions;
         enabled_extensions.reserve(count + 1);
@@ -31,7 +31,7 @@ namespace caelus::core::vulkan {
         return enabled_extensions;
     }
 
-    vk::Instance get_instance() {
+    vk::Instance get_instance(const types::detail::VulkanContext& ctx) {
         vk::ApplicationInfo application_info{}; {
             application_info.apiVersion = VK_API_VERSION_1_2;
             application_info.applicationVersion = VK_API_VERSION_1_2;
@@ -41,7 +41,7 @@ namespace caelus::core::vulkan {
             application_info.pApplicationName = "";
         }
 
-        auto enabled_exts = get_required_extensions();
+        auto enabled_exts = get_required_extensions(ctx);
 
         [[maybe_unused]] const char* validation_layer = "VK_LAYER_KHRONOS_validation";
 
@@ -59,10 +59,10 @@ namespace caelus::core::vulkan {
 #endif
         }
 
-        return vk::createInstance(instance_create_info);
+        return vk::createInstance(instance_create_info, nullptr, ctx.dispatcher);
     }
 
-    vk::DebugUtilsMessengerEXT install_validation_layers(const types::detail::VulkanContext& data) {
+    vk::DebugUtilsMessengerEXT install_validation_layers(const types::detail::VulkanContext& ctx) {
         vk::DebugUtilsMessengerCreateInfoEXT create_info{}; {
             create_info.messageSeverity =
                 vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose |
@@ -75,8 +75,6 @@ namespace caelus::core::vulkan {
             create_info.pfnUserCallback = callbacks::vulkan_debug_callback;
         }
 
-        vk::DispatchLoaderDynamic dispatcher{ data.instance, vkGetInstanceProcAddr };
-
-        return data.instance.createDebugUtilsMessengerEXT(create_info, nullptr, dispatcher);
+        return ctx.instance.createDebugUtilsMessengerEXT(create_info, nullptr, ctx.dispatcher);
     }
 } // namespace caelus::core::vulkan

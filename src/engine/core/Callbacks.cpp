@@ -1,4 +1,5 @@
 #include "engine/core/Callbacks.hpp"
+#include "engine/core/util/Util.hpp"
 
 #include <string>
 #include <ctime>
@@ -6,20 +7,8 @@
 #include <iostream>
 
 #include "vulkan/vulkan.hpp"
-#include "fmt/format.h"
 
 namespace caelus::core::callbacks {
-    std::string get_current_timestamp() {
-        namespace ch = std::chrono;
-
-        auto time = ch::duration_cast<ch::seconds>(ch::system_clock::now().time_since_epoch()).count();
-
-        std::string buf(128, '\0');
-        buf.resize(std::strftime(buf.data(), buf.size(), "%Y-%m-%d %X", std::localtime(&time)));
-
-        return buf;
-    }
-
     static std::string get_message_type(const VkDebugUtilsMessageTypeFlagsEXT& type) {
         switch (type) {
             case VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT: {
@@ -70,9 +59,9 @@ namespace caelus::core::callbacks {
         const VkDebugUtilsMessengerCallbackDataEXT* callback_data,
         void*) {
 
-        std::cout << fmt::format(
+        std::cout << util::format(
             "[{}] [Vulkan] [{}/{}]: {}\n",
-            get_current_timestamp(),
+            util::get_current_timestamp(),
             get_message_severity(message_severity),
             get_message_type(message_type),
             callback_data->pMessage);
@@ -85,9 +74,9 @@ namespace caelus::core::callbacks {
     }
 
     [[maybe_unused]] void glfw_error_callback(int code, const char* message) {
-        std::cout << fmt::format(
+        std::cout << util::format(
             "[{}] [GLFW3] [Error: {}]: {}\n",
-            get_current_timestamp(),
+            util::get_current_timestamp(),
             code,
             message);
     }

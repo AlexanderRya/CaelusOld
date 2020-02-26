@@ -4,21 +4,21 @@
 #include <vector>
 #include "engine/core/Types.hpp"
 
-namespace vk {
-    class CommandBuffer;
-} // namespace vk
+namespace caelus::core::vulkan {
+    struct Pipeline;
+} // namespace caelus::core::vulkan
 
 namespace caelus::core::components {
     struct Mesh;
 
-    class Scene {
-        std::vector<Mesh> meshes;
-    public:
-        Scene() = default;
+    namespace buffers {
+        struct VertexBuffer;
+    } // namespace caelus::core::components::buffers
 
-        void add_mesh(const Mesh&);
-        const Mesh& get_mesh(const usize) const;
-        const std::vector<Mesh>& get_meshes() const;
+    struct Scene {
+        std::vector<Mesh> meshes;
+        std::vector<vulkan::Pipeline> pipelines;
+        std::vector<buffers::VertexBuffer> vertex_buffers;
     };
 } // namespace caelus::core::components
 

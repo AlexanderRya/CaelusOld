@@ -5,7 +5,7 @@
 
 namespace caelus::core {
     namespace components {
-        class Scene;
+        struct Scene;
     } // namespace caelus::core::components
 
     namespace types::detail {
@@ -16,10 +16,12 @@ namespace caelus::core {
         u32 current_frame{};
         u32 image_index{};
 
-        [[maybe_unused]] types::detail::VulkanContext& ctx;
+        std::vector<vk::Fence> frames_in_flight;
+
+        const types::detail::VulkanContext& ctx;
 
     public:
-        explicit Renderer(types::detail::VulkanContext& ctx) : ctx(ctx) {}
+        explicit Renderer(const types::detail::VulkanContext& ctx);
 
         void acquire_frame();
         void draw();

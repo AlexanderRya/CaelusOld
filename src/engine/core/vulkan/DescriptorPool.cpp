@@ -25,7 +25,7 @@ namespace caelus::core::vulkan {
             descriptor_pool_create_info.maxSets = descriptor_pool_sizes.size() * 1000;
         }
 
-        auto pool = ctx.device_details.device.createDescriptorPool(descriptor_pool_create_info);
+        auto pool = ctx.device_details.device.createDescriptorPool(descriptor_pool_create_info, nullptr, ctx.dispatcher);
 
         logger::info("Descriptor pool successfully created, sizes:");
         for (const auto& [type, count] : descriptor_pool_sizes) {

@@ -7,7 +7,7 @@
 namespace caelus::core::vulkan {
     struct PipelineLayout {
         vk::PipelineLayout pipeline_layout{};
-        std::vector<vk::DescriptorSetLayout> set_layout{};
+        vk::DescriptorSetLayout set_layout{};
     };
 } // namespace caelus::core::vulkan
 

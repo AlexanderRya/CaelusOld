@@ -12,11 +12,10 @@ namespace caelus::core::components::managers {
     public:
         SceneManager() = default;
 
-        void add_scene(const u64, const Scene&);
+        const Scene& get_scene(const u64) const;
         void remove_scene(const u64);
 
         Scene& operator [](const u64);
-        const Scene& operator [](const u64) const;
     };
 } // namespace caelus::core::components::managers
 

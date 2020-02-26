@@ -10,10 +10,10 @@ layout (set = 1, binding = 0) uniform Matrices1 {
     mat4 pv_matrix;
 } mat1;*/
 
-/*layout (std430, set = 0, binding = 1) buffer readonly Instances {
+layout (std430, set = 0, binding = 1) buffer readonly Instances {
     mat4 transforms[];
-} instances;*/
+} instances;
 
 void main() {
-    gl_Position = /*mat1.pv_matrix * mat0.model * instances.transforms[gl_InstanceIndex] **/ vec4(ipos, 1.0);
+    gl_Position = /*mat1.pv_matrix * mat0.model * */instances.transforms[gl_InstanceIndex] * vec4(ipos, 1.0);
 }

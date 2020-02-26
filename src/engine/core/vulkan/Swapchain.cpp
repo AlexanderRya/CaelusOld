@@ -33,8 +33,8 @@ namespace caelus::core::vulkan {
         }
     }
 
-    static inline vk::SurfaceFormatKHR get_format(const types::detail::DeviceDetails& device_details, const vk::SurfaceKHR surface) {
-        auto surface_formats = device_details.physical_device.getSurfaceFormatsKHR(surface);
+    static inline vk::SurfaceFormatKHR get_format(const types::detail::VulkanContext& ctx) {
+        auto surface_formats = ctx.device_details.physical_device.getSurfaceFormatsKHR(ctx.surface, {}, ctx.dispatcher);
 
         vk::SurfaceFormatKHR format = surface_formats[0];
 
@@ -53,8 +53,8 @@ namespace caelus::core::vulkan {
         return format;
     }
 
-    static inline vk::PresentModeKHR get_present_mode(const types::detail::DeviceDetails& device_details, const vk::SurfaceKHR surface) {
-        for (const auto& mode : device_details.physical_device.getSurfacePresentModesKHR(surface)) {
+    static inline vk::PresentModeKHR get_present_mode(const types::detail::VulkanContext& ctx) {
+        for (const auto& mode : ctx.device_details.physical_device.getSurfacePresentModesKHR(ctx.surface, {}, ctx.dispatcher)) {
             if (mode == vk::PresentModeKHR::eImmediate) {
                 caelus::logger::info("Swapchain details: present mode: vk::PresentModeKHR::", vk::to_string(mode));
                 return mode;
@@ -66,9 +66,9 @@ namespace caelus::core::vulkan {
         return vk::PresentModeKHR::eFifo;
     }
 
-    static inline void get_swapchain(const types::detail::DeviceDetails& device_details, const vk::SurfaceKHR surface, types::detail::SwapchainDetails& details) {
+    static inline void get_swapchain(const types::detail::VulkanContext& ctx, types::detail::SwapchainDetails& details) {
         vk::SwapchainCreateInfoKHR swapchain_create_info{}; {
-            swapchain_create_info.surface = surface;
+            swapchain_create_info.surface = ctx.surface;
             swapchain_create_info.minImageCount = details.image_count;
             swapchain_create_info.imageFormat = details.format.format;
             swapchain_create_info.imageColorSpace = details.format.colorSpace;
@@ -78,20 +78,20 @@ namespace caelus::core::vulkan {
             swapchain_create_info.imageUsage = vk::ImageUsageFlagBits::eColorAttachment;
             swapchain_create_info.imageSharingMode = vk::SharingMode::eExclusive;
             swapchain_create_info.queueFamilyIndexCount = 1;
-            swapchain_create_info.pQueueFamilyIndices = &device_details.queue_family;
+            swapchain_create_info.pQueueFamilyIndices = &ctx.device_details.queue_family;
             swapchain_create_info.compositeAlpha = vk::CompositeAlphaFlagBitsKHR::eOpaque;
             swapchain_create_info.presentMode = details.present_mode;
             swapchain_create_info.clipped = true;
             swapchain_create_info.oldSwapchain = nullptr;
         }
 
-        details.swapchain = device_details.device.createSwapchainKHR(swapchain_create_info);
+        details.swapchain = ctx.device_details.device.createSwapchainKHR(swapchain_create_info, nullptr, ctx.dispatcher);
 
         caelus::logger::info("Swapchain successfully created");
     }
 
-    static inline void create_images(const types::detail::DeviceDetails& device_details, types::detail::SwapchainDetails& details) {
-        details.images = device_details.device.getSwapchainImagesKHR(details.swapchain);
+    static inline void create_images(const types::detail::VulkanContext& ctx, types::detail::SwapchainDetails& details) {
+        details.images = ctx.device_details.device.getSwapchainImagesKHR(details.swapchain, ctx.dispatcher);
 
         vk::ImageViewCreateInfo image_view_create_info{}; {
             image_view_create_info.format = details.format.format;
@@ -113,26 +113,26 @@ namespace caelus::core::vulkan {
             image_view_create_info.image = image;
 
             details.image_views.emplace_back(
-                device_details.device.createImageView(image_view_create_info));
+                ctx.device_details.device.createImageView(image_view_create_info, nullptr, ctx.dispatcher));
         }
 
         caelus::logger::info("Swapchain images successfully created");
     }
 
     types::detail::SwapchainDetails get_swapchain_details(const Window& window, const types::detail::VulkanContext& ctx) {
-        auto capabilities = ctx.device_details.physical_device.getSurfaceCapabilitiesKHR(ctx.surface);
+        auto capabilities = ctx.device_details.physical_device.getSurfaceCapabilitiesKHR(ctx.surface, ctx.dispatcher);
 
         types::detail::SwapchainDetails details{};
 
         details.image_count = get_image_count(capabilities);
         details.extent = get_extent(window, capabilities);
-        details.format = get_format(ctx.device_details, ctx.surface);
-        details.present_mode = get_present_mode(ctx.device_details, ctx.surface);
+        details.format = get_format(ctx);
+        details.present_mode = get_present_mode(ctx);
 
         details.surface_transform = capabilities.currentTransform;
 
-        get_swapchain(ctx.device_details, ctx.surface, details);
-        create_images(ctx.device_details, details);
+        get_swapchain(ctx, details);
+        create_images(ctx, details);
 
         return details;
     }

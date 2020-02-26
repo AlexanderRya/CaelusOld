@@ -8,16 +8,16 @@ namespace caelus::core::vulkan {
             fence_create_info.flags = vk::FenceCreateFlagBits::eSignaled;
         }
 
-        std::vector<vk::Fence> fences(size, ctx.device_details.device.createFence(fence_create_info));
+        std::vector<vk::Fence> fences(size, ctx.device_details.device.createFence(fence_create_info, nullptr, ctx.dispatcher));
 
         return fences;
     }
 
-    vk::Fence make_fence(const types::detail::VulkanContext& data) {
+    vk::Fence make_fence(const types::detail::VulkanContext& ctx) {
         vk::FenceCreateInfo fence_create_info{}; {
             fence_create_info.flags = vk::FenceCreateFlagBits::eSignaled;
         }
 
-        return data.device_details.device.createFence(fence_create_info);
+        return ctx.device_details.device.createFence(fence_create_info, nullptr, ctx.dispatcher);
     }
 } // namespace caelus::core::vulkan
