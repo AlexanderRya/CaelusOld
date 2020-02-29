@@ -28,10 +28,6 @@ namespace caelus::core::types::detail {
         std::vector<vk::Image> images{};
         std::vector<vk::ImageView> image_views{};
     };
-
-    struct RenderGraphDetails {
-
-    };
 } // namespace caelus::core::types::detail
 
 #endif //CAELUS_DETAILS_HPP

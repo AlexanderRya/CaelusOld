@@ -6,6 +6,7 @@
 namespace caelus::core {
     namespace components {
         struct Scene;
+        struct Mesh;
     } // namespace caelus::core::components
 
     namespace types::detail {
@@ -20,12 +21,13 @@ namespace caelus::core {
 
         const types::detail::VulkanContext& ctx;
 
+        void update_mesh(components::Mesh&);
     public:
         explicit Renderer(const types::detail::VulkanContext& ctx);
 
-        void acquire_frame();
+        u32 acquire_frame();
         void draw();
-        void build(const components::Scene&);
+        void build(components::Scene&);
     };
 } // namespace caelus::core
 

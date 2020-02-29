@@ -1,5 +1,9 @@
+#include "engine/core/components/buffers/GenericBuffer.hpp"
 #include "engine/core/components/buffers/VertexBuffer.hpp"
 #include "engine/core/vulkan/VulkanContext.hpp"
+#include "engine/core/vulkan/DescriptorSet.hpp"
+#include "engine/core/renderer/Renderer.hpp"
+#include "engine/core/components/Scene.hpp"
 #include "engine/core/components/Mesh.hpp"
 #include "engine/core/vulkan/Pipeline.hpp"
 #include "engine/core/Application.hpp"
@@ -18,15 +22,17 @@ namespace caelus::core {
         Renderer renderer{ context };
 
         components::Scene scene{}; {
+            scene.layouts.emplace_back(vulkan::create_pipeline_layout(context, vulkan::PipelineLayoutType::GenericMesh));
+
             types::info::PipelineCreateInfo pipeline_create_info{}; {
                 pipeline_create_info.ctx = &context;
+                pipeline_create_info.type = vulkan::PipelineType::Default;
+                pipeline_create_info.layout = scene.layouts[0];
                 pipeline_create_info.vertex_path = "../resources/shaders/test.vert.spv";
                 pipeline_create_info.fragment_path = "../resources/shaders/test.frag.spv";
-                pipeline_create_info.renderpass_index = 0;
-                pipeline_create_info.subpass_index = 0;
             }
 
-            scene.pipelines.emplace_back() = vulkan::make_generic_mesh_pipeline(pipeline_create_info);
+            scene.pipelines.emplace_back(vulkan::make_generic_mesh_pipeline(pipeline_create_info));
 
             types::info::VertexBufferCreateInfo buffer_create_info{}; {
                 buffer_create_info.ctx = &context;
@@ -35,21 +41,23 @@ namespace caelus::core {
 
             scene.vertex_buffers.emplace_back(buffer_create_info);
 
-            scene.meshes.emplace_back(components::Mesh{
-                .pipeline_idx = 0,
-                .vertex_buffer_idx = 0,
-                .vertex_count = 3,
-                .instances_count = 1
-            });
+            components::Mesh triangle{}; {
+                triangle.pipeline = scene.pipelines[0];
+                triangle.vertex_buffer_idx = 0;
+                triangle.instances = {
+                    glm::mat4(1.0f)
+                };
+            }
 
-            scene_manager[0] = scene;
+            components::create_mesh(triangle, context);
+
+            scene.meshes.emplace_back(std::move(triangle));
         }
 
         while (!window.should_close()) {
             renderer.acquire_frame();
-            renderer.build(scene_manager.get_scene(0));
+            renderer.build(scene);
             renderer.draw();
-
             window.poll_events();
         }
     }

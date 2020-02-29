@@ -27,6 +27,7 @@ namespace caelus::core::vulkan {
     [[nodiscard]] types::detail::VulkanContext make_vulkan_context(const Window& window) {
         types::detail::VulkanContext context{};
 
+        logger::info("Vulkan initialization sequence starting.");
         load_initial_modules(context.dispatcher);
         context.instance = vulkan::get_instance(context);
         context.dispatcher.init(context.instance, context.dispatcher.vkGetInstanceProcAddr);
@@ -46,6 +47,7 @@ namespace caelus::core::vulkan {
         // Synchronization
         context.image_available = vulkan::make_semaphores(constants::frames_in_flight, context);
         context.render_finished = vulkan::make_semaphores(constants::frames_in_flight, context);
+        logger::info("Vulkan initialization sequence completed successfully.");
 
         return context;
     }

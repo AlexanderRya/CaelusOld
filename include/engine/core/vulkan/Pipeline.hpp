@@ -7,22 +7,22 @@
 
 #include <filesystem>
 
+namespace caelus::core::vulkan {
+    enum class PipelineType {
+        Default
+    };
+} // namespace caelus::core::vulkan
+
 namespace caelus::core::types {
     namespace detail {
         struct VulkanContext;
-    } // // namespace caelus::core::types::detail
+    } // namespace caelus::core::types::detail
 
     namespace info {
-        enum class PipelineType {
-            Default,
-            Custom
-        };
-
         struct PipelineCreateInfo {
-            usize renderpass_index = 0;
-            usize subpass_index = 0;
+            vulkan::PipelineLayout layout;
 
-            PipelineType type = PipelineType::Default;
+            vulkan::PipelineType type = vulkan::PipelineType::Default;
 
             std::filesystem::path vertex_path{};
             std::filesystem::path fragment_path{};
@@ -34,8 +34,8 @@ namespace caelus::core::types {
 
 namespace caelus::core::vulkan {
     struct Pipeline {
-        vk::Pipeline pipeline;
         vulkan::PipelineLayout layout;
+        vk::Pipeline pipeline;
     };
 
     [[nodiscard]] vk::ShaderModule load_module(const types::detail::VulkanContext*, const std::filesystem::path&);

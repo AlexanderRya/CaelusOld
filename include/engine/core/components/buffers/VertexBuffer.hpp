@@ -27,6 +27,8 @@ namespace caelus::core::components::buffers {
         vk::Buffer buffer;
         vk::DeviceMemory memory;
 
+        usize size;
+
         explicit VertexBuffer(const types::info::VertexBufferCreateInfo&);
 
         void deallocate();

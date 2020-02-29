@@ -12,6 +12,8 @@ namespace caelus::core::components::buffers {
         vk::Buffer temp_buffer{};
         vk::DeviceMemory temp_memory{};
 
+        size = info.vertices.size();
+
         /* Allocate staging buffer */ {
             temp_buffer = util::make_buffer(
                 info.vertices.size() * sizeof(types::Vertex),

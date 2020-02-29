@@ -29,10 +29,7 @@ namespace caelus::core::vulkan {
         return module;
     }
 
-
     Pipeline make_generic_mesh_pipeline(const types::info::PipelineCreateInfo& info) {
-        Pipeline pipeline{};
-
         std::array<vk::ShaderModule, 2> modules{}; {
             modules[0] = load_module(info.ctx, info.vertex_path);
             modules[1] = load_module(info.ctx, info.fragment_path);
@@ -60,7 +57,7 @@ namespace caelus::core::vulkan {
             }
         }
 
-        const std::array dynamic_states{ vk::DynamicState::eViewport, vk::DynamicState::eScissor };
+        constexpr std::array dynamic_states{ vk::DynamicState::eViewport, vk::DynamicState::eScissor };
 
         vk::PipelineDynamicStateCreateInfo dynamic_state_create_info{}; {
             dynamic_state_create_info.dynamicStateCount = dynamic_states.size();
@@ -157,15 +154,6 @@ namespace caelus::core::vulkan {
             color_blend_info.blendConstants[2] = 0.0f;
             color_blend_info.blendConstants[3] = 0.0f;
         }
-       
-        vk::PipelineLayoutCreateInfo layout_create_info{}; {
-            layout_create_info.setLayoutCount = 0;
-            layout_create_info.pSetLayouts = nullptr;
-            layout_create_info.pushConstantRangeCount = 0;
-            layout_create_info.pPushConstantRanges = nullptr;
-        }
-
-        pipeline.layout.pipeline_layout = info.ctx->device_details.device.createPipelineLayout(layout_create_info, nullptr, info.ctx->dispatcher);
 
         vk::GraphicsPipelineCreateInfo pipeline_info{}; {
             pipeline_info.stageCount = stages.size();
@@ -178,14 +166,16 @@ namespace caelus::core::vulkan {
             pipeline_info.pDepthStencilState = &depth_stencil_info;
             pipeline_info.pColorBlendState = &color_blend_info;
             pipeline_info.pDynamicState = &dynamic_state_create_info;
-            pipeline_info.layout = pipeline.layout.pipeline_layout;
-            pipeline_info.renderPass = info.ctx->render_passes[info.renderpass_index];
-            pipeline_info.subpass = info.subpass_index;
+            pipeline_info.layout = info.layout.pipeline_layout;
+            pipeline_info.renderPass = info.ctx->render_passes[0];
+            pipeline_info.subpass = 0;
             pipeline_info.basePipelineHandle = nullptr;
             pipeline_info.basePipelineIndex = -1;
         }
-
-        pipeline.pipeline = info.ctx->device_details.device.createGraphicsPipeline(nullptr, pipeline_info, nullptr, info.ctx->dispatcher);
+        Pipeline pipeline{}; {
+            pipeline.pipeline = info.ctx->device_details.device.createGraphicsPipeline(nullptr, pipeline_info, nullptr, info.ctx->dispatcher);
+            pipeline.layout = info.layout;
+        }
 
         logger::info("Generic pipeline successfully created");
 

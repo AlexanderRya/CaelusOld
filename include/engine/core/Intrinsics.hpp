@@ -3,7 +3,7 @@
 
 namespace caelus::core::util {
 #if _WIN32
-    #define vulkan_module "vulkan-1.dll"
+    #define vulkan_module L"vulkan-1.dll"
     void* load_module(LPCWSTR name) {
         return LoadLibraryW(name);
     }
@@ -11,7 +11,7 @@ namespace caelus::core::util {
         return reinterpret_cast<void(*)()>(GetProcAddressW(handle, symbol));
     }
     void close_module(HMODULE handle) {
-        FreeLibrary(module)
+        FreeLibrary(handle)
     }
 #elif __linux__
     #define vulkan_module "libvulkan.so"

@@ -1,11 +1,15 @@
+#include "engine/core/components/buffers/GenericBuffer.hpp"
 #include "engine/core/components/buffers/VertexBuffer.hpp"
 #include "engine/core/vulkan/VulkanContext.hpp"
+#include "engine/core/vulkan/DescriptorSet.hpp"
 #include "engine/core/renderer/Renderer.hpp"
 #include "engine/core/components/Scene.hpp"
 #include "engine/core/vulkan/Pipeline.hpp"
 #include "engine/core/components/Mesh.hpp"
 #include "engine/core/vulkan/Fence.hpp"
 #include "engine/core/Constants.hpp"
+
+#include "GLFW/glfw3.h"
 
 #include "glm/glm.hpp"
 #include "glm/gtc/type_ptr.hpp"
@@ -17,15 +21,16 @@ namespace caelus::core {
         frames_in_flight.resize(constants::frames_in_flight);
     }
 
-    void Renderer::acquire_frame() {
-        image_index =
-            ctx.device_details.device.acquireNextImageKHR(ctx.swapchain_details.swapchain, -1, ctx.image_available[current_frame], nullptr, ctx.dispatcher).value;
+    u32 Renderer::acquire_frame() {
+        image_index = ctx.device_details.device.acquireNextImageKHR(ctx.swapchain_details.swapchain, -1, ctx.image_available[current_frame], nullptr, ctx.dispatcher).value;
 
         if (!frames_in_flight[current_frame]) {
             frames_in_flight[current_frame] = vulkan::make_fence(ctx);
         }
 
         ctx.device_details.device.waitForFences(frames_in_flight[current_frame], true, -1, ctx.dispatcher);
+
+        return current_frame;
     }
 
     void Renderer::draw() {
@@ -56,7 +61,7 @@ namespace caelus::core {
         current_frame = (current_frame + 1) % constants::frames_in_flight;
     }
 
-    void Renderer::build(const components::Scene& scene) {
+    void Renderer::build(components::Scene& scene) {
         vk::CommandBufferBeginInfo begin_info{}; {
             begin_info.flags |= vk::CommandBufferUsageFlagBits::eOneTimeSubmit;
         }
@@ -94,13 +99,27 @@ namespace caelus::core {
 
         ctx.command_buffers[image_index].beginRenderPass(render_pass_begin_info, vk::SubpassContents::eInline, ctx.dispatcher);
 
-        for (const auto& mesh : scene.meshes) {
-            ctx.command_buffers[image_index].bindPipeline(vk::PipelineBindPoint::eGraphics, scene.pipelines[mesh.pipeline_idx].pipeline, ctx.dispatcher);
+        for (auto& mesh : scene.meshes) {
+            update_mesh(mesh);
+
+            ctx.command_buffers[image_index].bindPipeline(vk::PipelineBindPoint::eGraphics, mesh.pipeline.pipeline, ctx.dispatcher);
             ctx.command_buffers[image_index].bindVertexBuffers(0, scene.vertex_buffers[mesh.vertex_buffer_idx].buffer, 0ul, ctx.dispatcher);
-            ctx.command_buffers[image_index].draw(mesh.vertex_count, mesh.instances_count, 0, 0, ctx.dispatcher);
+            ctx.command_buffers[image_index].bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh.pipeline.layout.pipeline_layout, 0, mesh.instance_descriptor[current_frame].handle(), nullptr, ctx.dispatcher);
+            // ctx.command_buffers[image_index].bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh.pipeline.layout.pipeline_layout, 0, scene.camera_descriptor[current_frame].handle(), nullptr, ctx.dispatcher);
+            ctx.command_buffers[image_index].draw(scene.vertex_buffers[mesh.vertex_buffer_idx].size, mesh.instances.size(), 0, 0, ctx.dispatcher);
         }
 
         ctx.command_buffers[image_index].endRenderPass(ctx.dispatcher);
         ctx.command_buffers[image_index].end(ctx.dispatcher);
+    }
+
+    void Renderer::update_mesh(components::Mesh& mesh) {
+        mesh.instances.emplace_back(glm::rotate(glm::mat4(1.0f), static_cast<float>(glfwGetTime()), { 0.0f, 0.0f, -1.0f }));
+        if (mesh.instances.size() != mesh.instance_buffer[current_frame].size()) {
+            mesh.instance_buffer[current_frame].write(mesh.instances);
+            mesh.instance_descriptor[current_frame].update(mesh.instance_buffer[current_frame].get_info());
+        } else {
+            mesh.instance_buffer[current_frame].write(mesh.instances);
+        }
     }
 } // namespace caelus::core

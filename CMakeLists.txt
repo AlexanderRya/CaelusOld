@@ -43,11 +43,12 @@ set(CAELUS_HEADERS
         include/engine/core/vulkan/Semaphore.hpp
         include/engine/core/components/buffers/VertexBuffer.hpp
         include/engine/core/components/Camera.hpp
-        include/engine/core/components/managers/SceneManager.hpp
         include/engine/core/vulkan/VulkanContext.hpp
         include/engine/core/vulkan/PipelineLayout.hpp
         include/engine/core/components/Scene.hpp
-        include/engine/core/Intrinsics.hpp include/engine/core/components/buffers/DescriptorBuffer.hpp include/engine/core/vulkan/DescriptorSet.hpp)
+        include/engine/core/Intrinsics.hpp
+        include/engine/core/components/buffers/GenericBuffer.hpp
+        include/engine/core/vulkan/DescriptorSet.hpp)
 
 set(CAELUS_SOURCES
         src/main.cpp
@@ -70,7 +71,9 @@ set(CAELUS_SOURCES
         src/engine/core/util/Util.cpp
         src/engine/core/components/Camera.cpp
         src/engine/core/vulkan/VulkanContext.cpp
-        src/engine/core/components/manager/SceneManager.cpp src/engine/core/vulkan/DescriptorSet.cpp)
+        src/engine/core/vulkan/DescriptorSet.cpp
+        src/engine/core/vulkan/PipelineLayout.cpp
+        src/engine/core/components/Mesh.cpp)
 
 add_executable(Caelus
         ${CAELUS_HEADERS}
@@ -101,7 +104,7 @@ if (UNIX)
 endif()
 
 if (WIN32)
-    target_link_libraries(Caelus glfw fmt)
+    target_link_libraries(Caelus glfw)
 elseif (UNIX)
-    target_link_libraries(Caelus glfw fmt pthread c++ c++abi)
+    target_link_libraries(Caelus glfw pthread c++ c++abi)
 endif()
