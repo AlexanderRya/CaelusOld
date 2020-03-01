@@ -4,14 +4,10 @@
 namespace caelus::core::vulkan {
     void SingleDescriptorSet::create(
         const types::detail::VulkanContext* context,
-        const vk::DescriptorSetLayout& set_layout,
-        const vk::DescriptorType set_type,
-        const DescriptorBinding& set_binding) {
+        const vk::DescriptorSetLayout& set_layout) {
 
         ctx = context;
         layout = set_layout;
-        type = set_type;
-        binding = set_binding;
 
         vk::DescriptorSetAllocateInfo allocate_info{}; {
             allocate_info.descriptorPool = ctx->descriptor_pool;
@@ -22,7 +18,7 @@ namespace caelus::core::vulkan {
         descriptor = ctx->device_details.device.allocateDescriptorSets(allocate_info, ctx->dispatcher).back();
     }
 
-    void SingleDescriptorSet::update(const vk::DescriptorBufferInfo& buffer_info) {
+    void SingleDescriptorSet::update(const vk::DescriptorBufferInfo& buffer_info, const vk::DescriptorType type, const DescriptorBinding& binding) {
         vk::WriteDescriptorSet write{}; {
             write.descriptorType = type;
             write.descriptorCount = 1;
@@ -41,22 +37,20 @@ namespace caelus::core::vulkan {
 
     DescriptorSet create_descriptor_set(
         const types::detail::VulkanContext* context,
-        const vk::DescriptorSetLayout& set_layout,
-        const vk::DescriptorType set_type,
-        const DescriptorBinding& set_binding) {
+        const vk::DescriptorSetLayout& set_layout) {
 
         DescriptorSet sets{};
 
         for (int i = 0; i < constants::frames_in_flight; ++i) {
-            sets.emplace_back().create(context, set_layout, set_type, set_binding);
+            sets.emplace_back().create(context, set_layout);
         }
 
         return sets;
     }
 
-    void update_descriptors(DescriptorSet& descriptors, const std::vector<vk::DescriptorBufferInfo>& infos) {
+    void update_descriptors(DescriptorSet& descriptors, const std::vector<vk::DescriptorBufferInfo>& infos, const vk::DescriptorType type, const DescriptorBinding& binding) {
         for (usize i = 0; i < descriptors.size(); ++i) {
-            descriptors[i].update(infos[i]);
+            descriptors[i].update(infos[i], type, binding);
         }
     }
 } // namespace caelus::core::vulkan

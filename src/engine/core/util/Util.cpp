@@ -84,9 +84,20 @@ namespace caelus::core::util {
 
     std::vector<types::Vertex> generate_triangle_geometry() {
         return { {
-            { { 0.0f, 0.5f, 0.0f }, { 0.0f, 0.0f } },
-            { { 0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f } },
-            { { -0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f } }
+            { { 0.0f, -0.5f, 0.0f }, { 0.0f, 0.0f } },
+            { { -0.5f, 0.5f, 0.0f }, { 0.0f, 0.0f } },
+            { { 0.5f, 0.5f, 0.0f }, { 0.0f, 0.0f } }
+        } };
+    }
+
+    std::vector<types::Vertex> generate_quad_geometry() {
+        return { {
+            { { -0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f } },
+            { { -0.5f, 0.5f, 0.0f }, { 0.0f, 0.0f } },
+            { { 0.5f, 0.5f, 0.0f }, { 0.0f, 0.0f } },
+            { { 0.5f, 0.5f, 0.0f }, { 0.0f, 0.0f } },
+            { { -0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f } },
+            { { 0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f } }
         } };
     }
 } // namespace caelus::core::util

@@ -99,13 +99,20 @@ namespace caelus::core {
 
         ctx.command_buffers[image_index].beginRenderPass(render_pass_begin_info, vk::SubpassContents::eInline, ctx.dispatcher);
 
+        ctx.command_buffers[image_index].bindPipeline(vk::PipelineBindPoint::eGraphics, scene.mesh_pipeline.pipeline, ctx.dispatcher);
+        //ctx.command_buffers[image_index].bindDescriptorSets(vk::PipelineBindPoint::eGraphics, scene.mesh_pipeline.layout.pipeline_layout, 0, scene.camera_descriptor[current_frame].handle(), nullptr, ctx.dispatcher);
+
         for (auto& mesh : scene.meshes) {
+            mesh.update(&mesh);
             update_mesh(mesh);
 
-            ctx.command_buffers[image_index].bindPipeline(vk::PipelineBindPoint::eGraphics, mesh.pipeline.pipeline, ctx.dispatcher);
             ctx.command_buffers[image_index].bindVertexBuffers(0, scene.vertex_buffers[mesh.vertex_buffer_idx].buffer, 0ul, ctx.dispatcher);
-            ctx.command_buffers[image_index].bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh.pipeline.layout.pipeline_layout, 0, mesh.instance_descriptor[current_frame].handle(), nullptr, ctx.dispatcher);
-            // ctx.command_buffers[image_index].bindDescriptorSets(vk::PipelineBindPoint::eGraphics, mesh.pipeline.layout.pipeline_layout, 0, scene.camera_descriptor[current_frame].handle(), nullptr, ctx.dispatcher);
+            ctx.command_buffers[image_index].bindDescriptorSets(
+                vk::PipelineBindPoint::eGraphics,
+                scene.mesh_pipeline.layout.pipeline_layout,
+                0,
+                mesh.instance_descriptor[current_frame].handle(),
+                nullptr, ctx.dispatcher);
             ctx.command_buffers[image_index].draw(scene.vertex_buffers[mesh.vertex_buffer_idx].size, mesh.instances.size(), 0, 0, ctx.dispatcher);
         }
 
@@ -114,10 +121,9 @@ namespace caelus::core {
     }
 
     void Renderer::update_mesh(components::Mesh& mesh) {
-        mesh.instances.emplace_back(glm::rotate(glm::mat4(1.0f), static_cast<float>(glfwGetTime()), { 0.0f, 0.0f, -1.0f }));
         if (mesh.instances.size() != mesh.instance_buffer[current_frame].size()) {
             mesh.instance_buffer[current_frame].write(mesh.instances);
-            mesh.instance_descriptor[current_frame].update(mesh.instance_buffer[current_frame].get_info());
+            mesh.instance_descriptor[current_frame].update(mesh.instance_buffer[current_frame].get_info(), vk::DescriptorType::eStorageBuffer, vulkan::DescriptorBinding::Instance);
         } else {
             mesh.instance_buffer[current_frame].write(mesh.instances);
         }

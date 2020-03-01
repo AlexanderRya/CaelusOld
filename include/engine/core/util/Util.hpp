@@ -19,6 +19,7 @@ namespace caelus::core::util {
     [[nodiscard]] vk::DeviceMemory allocate_memory(const vk::Buffer&, const vk::MemoryPropertyFlags&, const types::detail::VulkanContext&);
     void copy_buffer(const vk::Buffer&, const vk::Buffer&, const usize, const types::detail::VulkanContext&);
     [[nodiscard]] std::vector<types::Vertex> generate_triangle_geometry();
+    [[nodiscard]] std::vector<types::Vertex> generate_quad_geometry();
 
     template <typename ...Args>
     [[nodiscard]] std::string format(const std::string& str, Args&& ...args) {

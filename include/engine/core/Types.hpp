@@ -29,7 +29,6 @@ namespace caelus::core::types {
 
     struct CameraData {
         glm::mat4 pv_mat;
-        glm::mat4 model;
     };
 }
 
